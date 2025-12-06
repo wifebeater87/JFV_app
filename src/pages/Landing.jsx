@@ -9,6 +9,7 @@ export default function Landing() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch real-time leaderboard from Firebase
   useEffect(() => {
     const nationsRef = collection(db, 'nations');
     const q = query(nationsRef, orderBy('score', 'desc'));
@@ -23,38 +24,41 @@ export default function Landing() {
   const handleStart = () => {
     if (!nationality) return;
     
-    // 1. Save the nation
+    // 1. Save the selected nation
     localStorage.setItem('userNation', nationality);
     
-    // 2. CRITICAL FIX: Force reset the score to 0 for a new session
+    // 2. CRITICAL: Reset score to 0 for a fresh session
     localStorage.setItem('userScore', '0'); 
     
-    // 3. Go to first checkpoint
+    // 3. Begin the journey
     navigate('/quiz/1');
   };
 
+  // Helper to find user's rank
   const userRank = leaderboard.findIndex(n => n.id === nationality);
   const isInTop3 = userRank !== -1 && userRank < 3;
   const userNationData = leaderboard[userRank];
 
   return (
-    // Background with a deep green gradient
     <div className="min-h-screen bg-gradient-to-b from-emerald-900 to-teal-900 text-white font-sans overflow-x-hidden">
       
-      {/* Hero Section */}
-      <div className="relative pt-12 pb-8 px-6">
-        <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full flex items-center gap-2">
+      {/* --- HERO SECTION --- */}
+      <div className="relative pt-12 pb-6 px-6">
+        
+        {/* Live Crowd Meter */}
+        <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full flex items-center gap-2 z-20">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-xs font-semibold text-green-100 uppercase tracking-wide">Live Crowd: Moderate</span>
+          <span className="text-[10px] font-semibold text-green-100 uppercase tracking-wide">Crowd: Moderate</span>
         </div>
 
-        <h1 className="font-display text-4xl font-extrabold mb-1 bg-clip-text text-transparent bg-gradient-to-r from-green-200 to-white">
+        {/* Responsive Title */}
+        <h1 className="font-display text-4xl md:text-5xl font-extrabold mb-1 bg-clip-text text-transparent bg-gradient-to-r from-green-200 to-white leading-tight">
           Forest Valley
         </h1>
-        <p className="text-green-200/80 text-lg font-light tracking-wide">Jewel Changi Airport</p>
+        <p className="text-green-200/80 text-lg md:text-xl font-light tracking-wide">Jewel Changi Airport</p>
       </div>
 
-      {/* Glass Stats Row */}
+      {/* --- STATS ROW --- */}
       <div className="flex justify-between gap-3 px-6 mb-8">
         {[
           { label: 'Time', value: '30 min', icon: '⏱️' },
@@ -69,14 +73,14 @@ export default function Landing() {
         ))}
       </div>
 
-      {/* Main Card (White Sheet) */}
+      {/* --- MAIN INTERACTIVE CARD --- */}
       <div className="bg-white rounded-t-[2.5rem] min-h-screen px-6 py-8 text-gray-800 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
         
-        {/* Description */}
+        {/* Intro Text */}
         <div className="mb-8">
           <h2 className="font-display text-xl font-bold text-emerald-900 mb-2">Begin Your Journey</h2>
           <p className="text-gray-500 leading-relaxed text-sm">
-            Explore one of the world's largest indoor gardens. Find the checkpoints, answer trivia, and represent your country on the global stage.
+            Explore one of the world's largest indoor gardens. Find the checkpoints, observe your surroundings, and represent your country on the global stage.
           </p>
         </div>
 
@@ -111,6 +115,7 @@ export default function Landing() {
                 <span className="text-xs font-bold text-emerald-600">Live Updates</span>
               </div>
               <div className="space-y-3">
+                {/* Top 3 */}
                 {leaderboard.slice(0, 3).map((nation, idx) => (
                   <div key={nation.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -124,9 +129,10 @@ export default function Landing() {
                     <span className="font-display font-bold text-sm text-gray-400">{nation.score}</span>
                   </div>
                 ))}
-                {/* User Row Highlight */}
+                
+                {/* User Row Highlight (if not in top 3) */}
                 {nationality && !isInTop3 && userNationData && (
-                  <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between">
+                  <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between animate-[fadeIn_0.5s_ease-out]">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
                         {userRank + 1}
@@ -140,7 +146,7 @@ export default function Landing() {
             </div>
           )}
 
-          {/* Sticky-feel Button */}
+          {/* Start Button */}
           <button 
             onClick={handleStart}
             disabled={!nationality}
@@ -153,7 +159,7 @@ export default function Landing() {
           </button>
         </div>
         
-        {/* Extra padding for bottom scroll */}
+        {/* Bottom Spacer for scrolling */}
         <div className="h-12"></div>
       </div>
     </div>
