@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, updateDoc, increment, setDoc } from 'firebase/firestore'; // Added setDoc
+import { doc, updateDoc, increment, setDoc } from 'firebase/firestore'; 
 import { db } from '../firebase';
 import questionsData from '../data/questions.json';
 import MapModal from '../components/MapModal';
+import Skeleton from '../components/Skeleton'; // Ensure Skeleton.jsx exists
 
 export default function QuizPage() {
   const { id } = useParams();
@@ -42,8 +43,7 @@ export default function QuizPage() {
           const nationName = localStorage.getItem('userNationName') || userNation;
           const nationFlag = localStorage.getItem('userNationFlag') || '🏳️';
 
-          // Use setDoc with { merge: true }
-          // This creates the document if it doesn't exist, or updates it if it does.
+          // Use setDoc with { merge: true } to create doc if missing
           await setDoc(nationRef, { 
             score: increment(1),
             name: nationName,
@@ -64,8 +64,30 @@ export default function QuizPage() {
     navigate(`/story/${currentId}`);
   };
 
-  if (!questionData) return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Loading...</div>;
+  // --- SKELETON LOADING STATE ---
+  if (!questionData) return (
+    <div className="min-h-screen bg-slate-900 flex flex-col p-6 relative">
+      <div className="mb-6 pt-4">
+         <div className="flex justify-between items-end mb-3">
+            <Skeleton className="w-32 h-6" />
+            <Skeleton className="w-10 h-6" />
+         </div>
+         <Skeleton className="w-full h-2 rounded-full" />
+      </div>
+      <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full pb-20">
+         <Skeleton className="w-24 h-6 mb-4" /> 
+         <Skeleton className="w-full h-10 mb-2" /> 
+         <Skeleton className="w-3/4 h-10 mb-8" /> 
+         <div className="grid gap-3">
+           {[1, 2, 3, 4].map(i => (
+             <Skeleton key={i} className="w-full h-16 rounded-2xl" />
+           ))}
+         </div>
+      </div>
+    </div>
+  );
 
+  // --- MAIN RENDER ---
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col p-6 relative font-sans overflow-hidden">
       
@@ -156,7 +178,7 @@ export default function QuizPage() {
         </div>
       </div>
 
-      {/* --- FEEDBACK POPUP (Appears after answering) --- */}
+      {/* --- FEEDBACK POPUP --- */}
       {selectedOption && (
         <div className={`fixed inset-x-0 bottom-0 p-6 rounded-t-3xl shadow-2xl animate-[slideUp_0.4s_cubic-bezier(0.16,1,0.3,1)] z-40
           ${isCorrect ? 'bg-emerald-50' : 'bg-rose-50'}
