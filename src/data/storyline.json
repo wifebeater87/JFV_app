@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "The Rain Vortex",
+    "image": "https://images.unsplash.com/photo-1569388330292-79cc1ec67270?auto=format&fit=crop&w=800&q=80",
+    "content": "The Rain Vortex is the world's tallest indoor waterfall at 40 meters high. It was built to expand Terminal 1's capacity and boost Changi's competitiveness as a global hub. The water falls through the roof at a velocity of 10,000 gallons per minute during peak flow, recirculating through the building to cool the environment."
+  },
+  {
+    "id": 2,
+    "title": "Architecture & Engineering",
+    "image": "https://images.unsplash.com/photo-1599557452668-3331b0cc4482?auto=format&fit=crop&w=800&q=80",
+    "content": "Constructing Jewel was a massive engineering feat. It was built upon Terminal 1's former open-air car park using a 'top-down' construction method to allow ground operations to continue. The dome facade consists of over 9,000 unique glass panels, each weighing up to 250kg, supported by a hidden structural ring."
+  },
+  {
+    "id": 3,
+    "title": "Singapore Aviation History",
+    "image": "https://images.unsplash.com/photo-1569937756447-1d44f657d5ba?auto=format&fit=crop&w=800&q=80",
+    "content": "Civil aviation in Singapore started in 1937 at Kallang Airport. From a small fishing village, Singapore transformed into a thriving metropolis. As the sector grew, the government recognized the need for greater capacity, leading to the opening of Changi Terminal 1 in 1981."
+  },
+  {
+    "id": 4,
+    "title": "The Indoor Rainforest",
+    "image": "https://images.unsplash.com/photo-1621926678284-a8292d33486c?auto=format&fit=crop&w=800&q=80",
+    "content": "The Forest Valley is one of the largest indoor gardens in the world. It houses over 900 trees and 60,000 shrubs, covering 22,000 square meters. Many of these plants were grown and acclimatized in a dedicated nursery for two years before being transported here."
+  }
+]

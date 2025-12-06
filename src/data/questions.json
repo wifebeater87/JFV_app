@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "checkpoint": "The Rain Vortex",
+    "question": "Challenge: Stand at a viewing deck and observe the waterfall. It is the world's tallest indoor waterfall. What is its official height?",
+    "options": ["30 meters", "40 meters", "50 meters", "60 meters"],
+    "correctAnswer": "40 meters"
+  },
+  {
+    "id": 2,
+    "checkpoint": "Architecture",
+    "question": "Challenge: Look up at the glass dome. It uses a special 'top-down' construction. How many unique glass panels make up this facade?",
+    "options": ["Over 3,000", "Over 5,000", "Over 9,000", "Over 12,000"],
+    "correctAnswer": "Over 9,000"
+  },
+  {
+    "id": 3,
+    "checkpoint": "Aviation History",
+    "question": "Challenge: Singapore's aviation history didn't start at Changi. According to the history logs, which year did Civil Aviation officially begin?",
+    "options": ["1937", "1965", "1981", "2000"],
+    "correctAnswer": "1937"
+  },
+  {
+    "id": 4,
+    "checkpoint": "Forest Valley",
+    "question": "Challenge: Observe the lush greenery around you. This indoor rainforest is massive. Approximately how many trees are housed here?",
+    "options": ["100+", "500+", "900+", "1500+"],
+    "correctAnswer": "900+"
+  }
+]
