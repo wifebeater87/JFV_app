@@ -23,9 +23,39 @@ export default function StoryPage() {
   const handlePhotoCapture = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Create a fake local URL to preview the image immediately
       const imageUrl = URL.createObjectURL(file);
       setUserPhoto(imageUrl);
+    }
+  };
+
+  // --- NEW: SMART SHARE FUNCTION ---
+  const handleSharePhoto = async () => {
+    if (!userPhoto) return;
+
+    try {
+      // 1. Convert the blob URL back into a File object
+      const response = await fetch(userPhoto);
+      const blob = await response.blob();
+      const file = new File([blob], `jewel-memory-${currentId}.jpg`, { type: "image/jpeg" });
+
+      // 2. Check if the device supports native sharing
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'My Jewel Memory',
+          text: `Captured at ${story.title} - Jewel Changi Airport`
+        });
+      } else {
+        // 3. Fallback for Desktop (Old Download Method)
+        const link = document.createElement('a');
+        link.href = userPhoto;
+        link.download = `jewel-memory-${currentId}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error("Error sharing photo:", error);
     }
   };
 
@@ -41,10 +71,8 @@ export default function StoryPage() {
           alt={story.title} 
           className="w-full h-full object-cover opacity-80"
         />
-        {/* Gradient Overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
         
-        {/* Title Block */}
         <div className="absolute bottom-0 left-0 w-full p-6">
           <div className="inline-block bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md px-3 py-1 rounded-full mb-3">
             <span className="text-emerald-300 font-bold uppercase tracking-widest text-xs">
@@ -60,12 +88,10 @@ export default function StoryPage() {
       {/* --- CONTENT SECTION --- */}
       <div className="px-6 mt-6 max-w-lg mx-auto space-y-8">
         
-        {/* Text Content */}
         <p className="text-slate-300 leading-relaxed text-lg font-light">
           {story.content}
         </p>
 
-        {/* Fun Fact Card */}
         <div className="bg-emerald-900/20 p-5 rounded-2xl border border-emerald-500/20 flex gap-4 items-start">
           <div className="text-2xl mt-1">💡</div>
           <div>
@@ -86,21 +112,29 @@ export default function StoryPage() {
           </p>
 
           {userPhoto ? (
-            // State: Photo Taken
-            <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-4 border-2 border-emerald-500 shadow-lg">
-              <img src={userPhoto} alt="User memory" className="w-full h-full object-cover" />
-              <div className="absolute bottom-2 right-2 bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
-                Saved!
+            <div className="space-y-3">
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden border-2 border-emerald-500 shadow-lg">
+                <img src={userPhoto} alt="User memory" className="w-full h-full object-cover" />
+                <div className="absolute top-2 right-2 bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded shadow flex items-center gap-1">
+                  <span>✓</span> Ready
+                </div>
               </div>
+
+              {/* NEW: Share/Save Button */}
+              <button 
+                onClick={handleSharePhoto}
+                className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 shadow-lg"
+              >
+                <span>📤</span> Share / Save to Photos
+              </button>
             </div>
           ) : (
-            // State: No Photo Yet
             <label className="block w-full py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold rounded-xl cursor-pointer transition-all active:scale-95 border-2 border-dashed border-slate-600 hover:border-emerald-500">
               Tap to Open Camera
               <input 
                 type="file" 
                 accept="image/*" 
-                capture="environment" // Triggers rear camera on mobile
+                capture="environment" 
                 className="hidden" 
                 onChange={handlePhotoCapture}
               />

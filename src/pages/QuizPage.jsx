@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, updateDoc, increment } from 'firebase/firestore';
+import { doc, updateDoc, increment, setDoc } from 'firebase/firestore'; // Added setDoc
 import { db } from '../firebase';
 import questionsData from '../data/questions.json';
 import MapModal from '../components/MapModal';
@@ -33,11 +33,23 @@ export default function QuizPage() {
     setIsCorrect(correct);
 
     if (correct) {
-      // 1. Update Global Leaderboard in Firebase
+      // 1. Update Global Leaderboard in Firebase (Safe Create)
       if (userNation) {
         try {
           const nationRef = doc(db, 'nations', userNation);
-          await updateDoc(nationRef, { score: increment(1) });
+          
+          // Retrieve metadata saved from Landing Page
+          const nationName = localStorage.getItem('userNationName') || userNation;
+          const nationFlag = localStorage.getItem('userNationFlag') || '🏳️';
+
+          // Use setDoc with { merge: true }
+          // This creates the document if it doesn't exist, or updates it if it does.
+          await setDoc(nationRef, { 
+            score: increment(1),
+            name: nationName,
+            flag: nationFlag
+          }, { merge: true });
+
         } catch (error) { console.error("Firebase Error:", error); }
       }
       
