@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Minimalist Horizontal Scrollbar */
+.scrollbar-minimal::-webkit-scrollbar {
+  height: 4px; /* Thin height */
+}
+
+.scrollbar-minimal::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05); /* Very light gray track */
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb {
+  background: #008272; /* Jewel Teal handle */
+  border-radius: 10px;
+}/* Minimalist Horizontal Scrollbar - FORCE VISIBILITY */
+.scrollbar-minimal {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #008272 transparent; /* For Firefox */
+}
+
+/* For Chrome, Edge, Safari */
+.scrollbar-minimal::-webkit-scrollbar {
+  height: 6px; /* Slightly thicker so it's visible */
+  display: block; /* Force display */
+}
+
+.scrollbar-minimal::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb {
+  background-color: #008272; /* Jewel Teal */
+  border-radius: 4px;
+}

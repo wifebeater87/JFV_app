@@ -11,10 +11,13 @@ export default {
         display: ['Poppins', 'sans-serif'],
       },
       colors: {
+        // Official-ish Jewel Palette
         jewel: {
-          900: '#064e3b', // Deep forest green
-          500: '#10b981', // Bright emerald
-          100: '#d1fae5', // Light mist
+          900: '#14312b', // Deepest Green (Header text)
+          800: '#1d463d', // Primary Buttons
+          500: '#008568', // Bright Teal accents
+          gold: '#c5a059', // Premium Gold (for "View Ticket" / Awards)
+          light: '#f9fafb', // Background Gray
         }
       }
     },
