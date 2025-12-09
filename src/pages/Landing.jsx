@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import countriesList from '../data/countries.json'; 
-import jewelLogo from '../assets/jewel-logo.png';
+import jewelLogo from '../assets/jewel-logo-final.png';
 
 export default function Landing() {
   const navigate = useNavigate();
