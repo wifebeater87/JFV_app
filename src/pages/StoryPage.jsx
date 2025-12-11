@@ -80,8 +80,9 @@ export default function StoryPage() {
         {/* Floating Text Overlay */}
         <div className="absolute bottom-0 left-0 w-full p-6 pointer-events-none">
           <div className="inline-block bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full mb-3 shadow-sm">
+            {/* UPDATED: Changed 'Field Note' to 'Checkpoint' */}
             <span className="text-emerald-300 font-bold uppercase tracking-widest text-xs">
-              Field Note #{currentId}
+              Checkpoint {currentId}
             </span>
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-bold text-white leading-tight">
@@ -113,11 +114,14 @@ export default function StoryPage() {
 
         {/* --- PHOTO CHALLENGE --- */}
         <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-sm">
+          {/* UPDATED: Changed Title to include (Optional) */}
           <h3 className="font-display font-bold text-lg mb-2 flex items-center justify-center gap-2 text-[#14312b]">
-            <span>📸</span> Capture a Memory
+            <span>📸</span> Capture a Memory (Optional)
           </h3>
+          
+          {/* UPDATED: New Instructions */}
           <p className="text-gray-500 text-sm mb-4">
-            Take a photo of the {story.title} to complete this entry.
+            Standing at the checkpoint marker, face the Rain Vortex and snap a unique vantage photo to add to your photo gallery!
           </p>
 
           {userPhoto ? (
@@ -153,7 +157,8 @@ export default function StoryPage() {
           onClick={handleContinue}
           className="w-full py-4 bg-[#14312b] hover:bg-[#0f2621] text-white rounded-xl font-bold text-lg shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
         >
-          {currentId === 4 ? 'Complete Quest 🏆' : 'Next Challenge ➜'}
+          {/* UPDATED: Changed 'Complete Quest' to 'Complete Trail' */}
+          {currentId === 4 ? 'Complete Trail 🏆' : 'Next Challenge ➜'}
         </button>
       </div>
     </div>

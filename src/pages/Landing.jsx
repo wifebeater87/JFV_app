@@ -3,7 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import countriesList from '../data/countries.json'; 
-import jewelLogo from '../assets/jewel-logo-final.png';
+import jewelLogo from '../assets/jewel-logo.png';
+
+// --- ODOMETER COMPONENT ---
+function Odometer({ value }) {
+  return (
+    <div className="inline-block relative overflow-hidden h-[1.1em]">
+      <div 
+        className="transition-transform duration-500 ease-out font-mono font-bold text-emerald-600 leading-none"
+        key={value} 
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -14,6 +28,9 @@ export default function Landing() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hasWonToday, setHasWonToday] = useState(false);
+  
+  // Active User Simulation
+  const [activeUsers, setActiveUsers] = useState(134);
 
   // --- FETCH DATA ---
   useEffect(() => {
@@ -34,12 +51,22 @@ export default function Landing() {
     if (lastWinDate === today) setHasWonToday(true);
   }, []);
 
+  // --- SIMULATE LIVE TRAFFIC ---
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const change = Math.floor(Math.random() * 5) - 2; 
+      setActiveUsers(prev => prev + change);
+    }, 4500); 
+    return () => clearInterval(interval);
+  }, []);
+
   const handleStart = () => {
     if (!nationality) return;
     localStorage.setItem('userNation', nationality.code);
     localStorage.setItem('userNationName', nationality.name);
     localStorage.setItem('userNationFlag', nationality.flag);
     localStorage.setItem('userScore', '0'); 
+    setActiveUsers(prev => prev + 1);
     navigate('/quiz/1');
   };
 
@@ -55,23 +82,17 @@ export default function Landing() {
       
       {/* --- JEWEL HEADER --- */}
       <div className="bg-[#14312b] pt-10 pb-12 px-6 shadow-lg rounded-b-[2.5rem] relative overflow-hidden z-10">
-        
-        {/* CROWD METER */}
         <div className="absolute top-6 right-6 bg-white/10 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full flex items-center gap-2 shadow-sm z-20">
           <div className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse shadow-[0_0_8px_rgba(110,231,183,0.8)]"></div>
           <span className="text-[10px] font-bold text-white uppercase tracking-wide">Crowd: Moderate</span>
         </div>
 
-        {/* LEFT ALIGNED CONTENT CONTAINER */}
         <div className="flex flex-col items-start mb-8 pl-1">
-           {/* LOGO */}
            <img 
              src={jewelLogo} 
              alt="Jewel Changi Airport" 
              className="h-20 object-contain mb-4 -ml-2" 
            />
-           
-           {/* TITLE & SUBTITLE */}
             <h1 className="font-display text-4xl font-bold mb-1 shadow-sm text-left leading-tight text-white">
               The Forest Valley Trail
             </h1>
@@ -80,11 +101,10 @@ export default function Landing() {
             </p>
         </div>
 
-        {/* --- STATS CARDS --- */}
         <div className="grid grid-cols-3 gap-3">
           {[
             { label: 'EST. TIME REQUIRED', value: '30 min', icon: '⏱️' },
-            { label: 'TRAIL LENGTH', value: '350 m', icon: '👣' }, // Changed to 350 m
+            { label: 'TRAIL LENGTH', value: '350 m', icon: '👣' }, 
             { label: 'ELEVATION GAINED', value: '28 m', icon: '⛰️' }
           ].map((stat, i) => (
             <div key={i} className="bg-[#0f4c3a] rounded-2xl p-3 text-center shadow-md border border-[#1a6b54]">
@@ -101,20 +121,50 @@ export default function Landing() {
       {/* --- MAIN CONTENT BODY --- */}
       <div className="px-6 py-8 -mt-2">
         
-        {/* Intro Text */}
         <div className="mb-8 text-center">
-            <h2 className="font-display text-xl font-bold text-[#008272] mb-3">Begin Your Journey</h2>
+            <h2 className="font-display text-xl font-bold text-[#008272] mb-3 px-2 leading-tight">
+              Instagram-worthy Pictures and Attractive Vouchers Await You!
+            </h2>
             
-            {/* UPDATED BODY TEXT */}
-            <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
+            {/* Intro Text */}
+            <p className="text-gray-600 text-base leading-relaxed mb-6 max-w-md mx-auto">
                 Embark on a short, self-guided journey through Jewel Changi Airport’s Forest Valley Trail. Compete with other nations by answering quiz questions and stand a chance to win exciting vouchers!
-                <span className="block mt-2 text-xs text-gray-400 italic">
-                  *Limited to one attempt per device
-                </span>
             </p>
+              
+            {/* Disclaimer Box */}
+            <div className="bg-orange-50/50 border border-orange-100 rounded-xl p-4 max-w-md mx-auto">
+                <p className="text-[13px] text-gray-500 leading-snug text-left">
+                  <span className="text-red-500 font-bold mr-1">*</span>
+                  <span className="font-semibold text-gray-600">Please note:</span> Each person is limited to one quiz attempt and one voucher redemption per day. Voucher redemption is only available upon completing the trail and achieving a perfect score.
+                </p>
+            </div>
         </div>
 
         <div className="space-y-4">
+          
+          {/* --- ACTIVE USERS COUNTER (Lifted Text) --- */}
+          {!hasWonToday && (
+            <div className="flex items-center justify-center gap-3 mb-2 animate-[fadeIn_1s_ease-out]">
+              {/* Green Dot */}
+              <div className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </div>
+              
+              {/* Counter & Text Container */}
+              <div className="text-gray-500 uppercase tracking-wide flex items-center gap-1.5">
+                <span className="font-bold text-emerald-600 text-xl leading-none">
+                  <Odometer value={activeUsers} />
+                </span>
+                
+                {/* LIFTED TEXT: Added 'relative -top-[1px]' to nudge it up */}
+                <span className="text-sm font-bold relative -top-[2px]">
+                  Explorers on the trail
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Nationality Picker */}
           {!hasWonToday && (
             <button 
@@ -165,7 +215,6 @@ export default function Landing() {
                 ))
               )}
               
-              {/* User Highlight */}
               {!loading && nationality && !isInTop3 && userNationData && (
                 <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between animate-[fadeIn_0.5s_ease-out]">
                    <div className="flex items-center gap-3">

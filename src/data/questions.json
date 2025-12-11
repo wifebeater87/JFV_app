@@ -1,30 +1,49 @@
 [
   {
     "id": 1,
-    "checkpoint": "The Rain Vortex",
-    "question": "Challenge: Stand at a viewing deck and observe the waterfall. It is the world's tallest indoor waterfall. What is its official height?",
-    "options": ["30 meters", "40 meters", "50 meters", "60 meters"],
-    "correctAnswer": "40 meters"
+    "question": "Observe the Rain Vortex. Does misting form around the area where the vortex passes through the ground floor?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "correctAnswer": "Yes",
+    "explanation": "A height of 40m was specifically chosen for the Rain Vortex as it is the minimum height where water becomes “atomised”, freshening the air and cooling the Valley."
   },
   {
     "id": 2,
-    "checkpoint": "Architecture",
-    "question": "Challenge: Look up at the glass dome. It uses a special 'top-down' construction. How many unique glass panels make up this facade?",
-    "options": ["Over 3,000", "Over 5,000", "Over 9,000", "Over 12,000"],
-    "correctAnswer": "Over 9,000"
+    "question": "Look carefully across you and spot the East Trail within the Forest Valley, adjacent to the waterfall. Refer to the image provided and pinpoint the location of the waterfall.",
+    "image": "/images/map-q2.png",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correctAnswer": "B",
+    "explanation": "The architecture of Changi Jewel Airport was carefully interwoven with nature to immerse visitors in a calm, restorative atmosphere—helping them unwind instead of feeling the usual airport rush."
   },
   {
     "id": 3,
-    "checkpoint": "Aviation History",
-    "question": "Challenge: Singapore's aviation history didn't start at Changi. According to the history logs, which year did Civil Aviation officially begin?",
-    "options": ["1937", "1965", "1981", "2000"],
-    "correctAnswer": "1937"
+    "question": "Pay attention to the Skytrain when it intersects the Forest Valley. How many carriages does either train have?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "correctAnswer": "3",
+    "explanation": "Opened in 1990, the Skytrain was Southeast Asia’s first ever driverless people-mover, connecting Terminals 1, 2, and 3 seamlessly."
   },
   {
     "id": 4,
-    "checkpoint": "Forest Valley",
-    "question": "Challenge: Observe the lush greenery around you. This indoor rainforest is massive. Approximately how many trees are housed here?",
-    "options": ["100+", "500+", "900+", "1500+"],
-    "correctAnswer": "900+"
+    "question": "Look up at the Crystal Bridge spanning across the top of the Forest Valley. Which of the following characteristics of the bridge are true? (Multi-select)",
+    "options": [
+      "The Crystal Bridge is aligned with the centre of the airport",
+      "The Crystal Bridge is the tallest vantage point within the Forest Valley",
+      "The Crystal Bridge is not supported by any overhead wire suspensions",
+      "None of the above are true"
+    ],
+    "correctAnswer": "The Crystal Bridge is not supported by any overhead wire suspensions",
+    "explanation": "The Crystal Bridge spans across the Forest Valley, offering visitors elevated views of the lush indoor garden and the Rain Vortex below, with its glass and steel design creates the feeling of walking on air."
   }
 ]
