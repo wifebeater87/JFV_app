@@ -1,8 +1,10 @@
 [
   {
     "id": 1,
-    "title": "The Rain Vortex",
-    "content": "You are standing before the world's largest indoor waterfall. At 40 meters high, the Rain Vortex recirculates 37,850 liters of water per minute. The water is harvested from rain and creates a cooling effect for the entire garden.",
+    "title": "An Indoor Rainforest",
+    "content": "Jewel Changi’s Forest Valley transforms the airport into a living rainforest, built on sustainable engineering. Over 60,000 climate-adapted plants work with natural light, rainwater harvesting, and energy-efficient cooling to regulate temperature and absorb carbon. This isn’t just nature added on top — it is nature engineered into the structure. Locals gather here, travellers pause in awe, and with rotating plant displays, the landscape constantly evolves, showing how design and sustainability can work together.",
+    "funFact": "Greenery covers an area of 21,000–22,000 m² across Jewel Changi Airport, amounting to ~16% of the terminal’s total area.",
+    "nextUp": "Make your way to the next checkpoint to uncover more about the engineering behind Changi Jewel Airport. Keep a lookout for the second waterfall along the way to answer the next Quiz!",
     "images": [
       "/images/Story-1.jpg",
       "/images/Story-2.jpg",
@@ -11,8 +13,10 @@
   },
   {
     "id": 2,
-    "title": "Shiseido Forest Valley",
-    "content": "This terraced garden houses over 900 trees and palms, and about 60,000 shrubs. The design was inspired by the rice terraces of Southeast Asia, allowing you to hike up a gentle incline surrounded by lush greenery.",
+    "title": "Singapore's Crown Jewel",
+    "content": "As one of the largest indoor gardens in the world, Jewel Changi Airport was originally constructed to expand the capacity of Terminal 1, later making global headlines and helping Changi Airport reclaim its position as the world’s best airport. Its engineering alone is something to marvel at, featuring a free-form toroidal glass and steel roof made of over 9000 unique glass panels, it stands as one of the most complex free-form architectural designs ever built. At its centre lies the ‘Eye of Jewel’, where it collects and reuses millions of litres of rainwater per minute – creating a space that blended sustainability and nature with functionality was a major challenge, requiring the expertise of thousands of professionals.",
+    "funFact": "The entire Forest Valley acts as a natural sound-softener; vegetation naturally absorbs and diffuses noise, reducing echo inside the immense glass dome and giving an unexpectedly calm ambience.",
+    "nextUp": "Move to the next checkpoint to uncover more about the engineering behind Changi Jewel Airport. Watch out for the Skytrain along the way to answer the next Quiz!",
     "images": [
       "/images/Story-4.jpg",
       "/images/Story-5.jpg",
@@ -21,8 +25,10 @@
   },
   {
     "id": 3,
-    "title": "Canopy Park",
-    "content": "Located at the topmost level (L5), this 14,000 sqm recreational wonderland features discovery slides, foggy bowls, and petal gardens. It is designed to be a playground for all ages, sitting just beneath the glass dome.",
+    "title": "Our Story",
+    "content": "From a small fishing village before 1819, Singapore transformed into a thriving metropolis in just seven decades by maximising land use and turning its people into its greatest resource. Today, it is regularly ranked among the world’s top three financial hubs, with annual trade flows exceeding S$1 trillion despite her inherent lack of natural resources. The Port of Singapore consistently ranks as one of the world’s busiest container ports, and more than 90% of the island’s land is developed or designated for public and economic use, reflecting some of the highest urban land-use efficiency on Earth.",
+    "funFact": "Nearly 25% of Singapore’s current land area did not exist in 1960 and was created through land reclamation.",
+    "nextUp": "Move to the next checkpoint to uncover more about the engineering behind Changi Jewel Airport. Watch out for the Skytrain along the way to answer the next Quiz!",
     "images": [
       "/images/Story-7.jpg",
       "/images/Story-8.jpg",
@@ -31,8 +37,10 @@
   },
   {
     "id": 4,
-    "title": "The Crystal Bridge",
-    "content": "Suspended 23 meters above ground, the Canopy Bridge offers the best vantage point of the Rain Vortex. Its glass bottom floor allows you to see right through to the forest floor below—if you are brave enough!",
+    "title": "Journey Through the Skies",
+    "content": "Singapore’s civil aviation story began in 1937 with a modest airport at Kallang. As air travel demand grew, the government recognised the need for larger, modern facilities—leading to the opening of Changi Airport’s Terminal 1 in 1981 and continuous expansion since. Today, Changi is consistently ranked the world’s best airport and handles over 1,000 aircraft movements daily. Its next major milestone, Terminal 5, is designed to accommodate passenger volumes equivalent to the current airport’s entire capacity, reflecting Singapore’s practice of planning aviation growth up to 50 years ahead.",
+    "funFact": "Changi Airport was built on reclaimed land over former swamps and the Changi coastline, using sand imported from neighbouring countries.",
+    "nextUp": "You’re one step away from completing the trail – head to the final page to reveal your score!",
     "images": [
       "/images/Story-10.jpg",
       "/images/Story-11.jpg",

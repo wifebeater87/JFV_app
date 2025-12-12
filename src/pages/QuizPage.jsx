@@ -97,7 +97,7 @@ export default function QuizPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col p-6 relative font-sans overflow-hidden">
+    <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col p-6 relative font-sans overflow-x-hidden">
       
       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
@@ -119,7 +119,7 @@ export default function QuizPage() {
       </div>
 
       {/* --- QUESTION AREA --- */}
-      <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full pb-20 relative z-10">
+      <div className={`flex-1 flex flex-col justify-center max-w-lg mx-auto w-full relative z-10 transition-all duration-300 ${isSubmitted ? 'pb-96' : 'pb-24'}`}>
         <div className="mb-6">
           <div className="inline-block bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1 mb-4">
             <p className="text-[#14312b] text-xs font-bold uppercase tracking-wide flex items-center gap-2">
@@ -130,7 +130,6 @@ export default function QuizPage() {
             {questionData.question}
           </h2>
           
-          {/* --- 🟢 THIS IS THE PART THAT WAS LIKELY MISSING OR BROKEN 🟢 --- */}
           {questionData.image && (
             <div className="mt-4 mb-2">
               <img 
@@ -140,7 +139,6 @@ export default function QuizPage() {
               />
             </div>
           )}
-          {/* ----------------------------------------------------------------- */}
 
           {isMultiSelect && !isSubmitted && (
             <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-wide">
@@ -157,12 +155,12 @@ export default function QuizPage() {
              
              if (isSubmitted) {
                 if (isSelected) {
-                   if (isCorrect) {
+                   if (option === questionData.correctAnswer) {
                      buttonStyle = "bg-emerald-100 border-emerald-500 text-emerald-900";
                    } else {
                      buttonStyle = "bg-red-100 border-red-500 text-red-900";
                    }
-                } else if (!isCorrect && option === questionData.correctAnswer && !isMultiSelect) {
+                } else if (option === questionData.correctAnswer) {
                    buttonStyle = "bg-emerald-50 border-emerald-200 text-emerald-700 opacity-60";
                 }
              } else {
@@ -185,20 +183,29 @@ export default function QuizPage() {
                 <div className="flex justify-between items-center">
                   <span className="leading-snug pr-4">{option}</span>
                   
-                  {isSubmitted && isSelected && isCorrect && (
-                    <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">
-                      +1 pt for {userNationName}
-                    </span>
-                  )}
-                  {isSubmitted && isSelected && !isCorrect && (
-                    <span>❌</span>
-                  )}
-                  {!isSubmitted && isMultiSelect && (
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
-                      ${isSelected ? 'border-[#008272] bg-[#008272]' : 'border-gray-300'}
-                    `}>
-                      {isSelected && <span className="text-white text-[10px]">✓</span>}
-                    </div>
+                  {/* --- UPDATED ICON LOGIC --- */}
+                  {isSubmitted ? (
+                    <>
+                      {option === questionData.correctAnswer ? (
+                        isSelected ? (
+                          <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">
+                            +1 pt for {userNationName}
+                          </span>
+                        ) : (
+                          <span>✅</span>
+                        )
+                      ) : (
+                        isSelected && <span>❌</span>
+                      )}
+                    </>
+                  ) : (
+                    !isSubmitted && isMultiSelect && (
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
+                        ${isSelected ? 'border-[#008272] bg-[#008272]' : 'border-gray-300'}
+                      `}>
+                        {isSelected && <span className="text-white text-[10px]">✓</span>}
+                      </div>
+                    )
                   )}
                 </div>
               </button>
@@ -222,13 +229,15 @@ export default function QuizPage() {
 
       {/* --- FEEDBACK POPUP --- */}
       {isSubmitted && (
-        <div className={`fixed inset-x-0 bottom-0 p-6 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] animate-[slideUp_0.3s_ease-out] z-40 bg-white`}>
+        <div className={`fixed inset-x-0 bottom-0 p-6 rounded-t-3xl shadow-[0_-10px_60px_rgba(0,0,0,0.15)] animate-[slideUp_0.3s_ease-out] z-50 bg-white border-t border-gray-100`}>
           <div className="max-w-lg mx-auto">
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div> 
+            
             <h3 className={`font-display text-xl font-bold mb-1 ${isCorrect ? 'text-[#14312b]' : 'text-red-600'}`}>
               {isCorrect ? 'Excellent work! 🎯' : 'Not quite right...'}
             </h3>
             
-            <div className="text-sm text-gray-500 mb-6 leading-relaxed">
+            <div className="text-sm text-gray-500 mb-6 leading-relaxed max-h-40 overflow-y-auto">
               {!isCorrect && (
                 <p className="mb-2 font-bold text-gray-700 bg-red-50 p-2 rounded-lg border border-red-100">
                   Correct Answer: {questionData.correctAnswer}

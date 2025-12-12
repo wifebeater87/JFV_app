@@ -8,6 +8,9 @@ export default function StoryPage() {
   const currentId = parseInt(id);
   const story = storylineData.find(s => s.id === currentId);
   const [userPhoto, setUserPhoto] = useState(null);
+  
+  // New State for Collapsible Fun Fact
+  const [isFactOpen, setIsFactOpen] = useState(false);
 
   // Fallback: Use the array from JSON, or an empty array if missing
   const carouselImages = story.images || [];
@@ -80,7 +83,6 @@ export default function StoryPage() {
         {/* Floating Text Overlay */}
         <div className="absolute bottom-0 left-0 w-full p-6 pointer-events-none">
           <div className="inline-block bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full mb-3 shadow-sm">
-            {/* UPDATED: Changed 'Field Note' to 'Checkpoint' */}
             <span className="text-emerald-300 font-bold uppercase tracking-widest text-xs">
               Checkpoint {currentId}
             </span>
@@ -95,31 +97,57 @@ export default function StoryPage() {
       </div>
 
       {/* --- CONTENT --- */}
-      <div className="px-6 mt-6 max-w-lg mx-auto space-y-8">
+      <div className="px-6 mt-6 max-w-lg mx-auto space-y-6">
         
+        {/* Main Body Text */}
         <p className="text-gray-600 leading-relaxed text-lg font-light">
           {story.content}
         </p>
 
-        {/* Fact Card */}
-        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex gap-4 items-start">
-          <div className="text-2xl mt-1">💡</div>
+        {/* --- COLLAPSIBLE FUN FACT CARD --- */}
+        <button 
+          onClick={() => setIsFactOpen(!isFactOpen)}
+          className="w-full text-left bg-white p-5 rounded-2xl border border-gray-200 shadow-sm transition-all active:scale-[0.98] hover:border-[#008272]/50 group"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="text-2xl">💡</div>
+              <h4 className="font-bold text-[#008272] text-xs uppercase tracking-wide">
+                Did you know?
+              </h4>
+            </div>
+            {/* Rotating Arrow */}
+            <span className={`text-gray-400 text-sm transition-transform duration-300 ${isFactOpen ? 'rotate-180' : ''}`}>
+              ▼
+            </span>
+          </div>
+
+          {/* Collapsible Content */}
+          <div className={`grid transition-all duration-300 ease-in-out ${isFactOpen ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+               <p className="text-gray-600 text-sm leading-snug pl-[3.2rem]">
+                 {story.funFact}
+               </p>
+            </div>
+          </div>
+        </button>
+
+        {/* --- NEXT UP SECTION --- */}
+        <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 flex gap-4 items-start">
+          <div className="text-2xl mt-1">🧭</div>
           <div>
-            <h4 className="font-bold text-[#008272] text-xs uppercase mb-1 tracking-wide">Did you know?</h4>
-            <p className="text-gray-600 text-sm leading-snug">
-              You are standing in a space that offsets over 30 tonnes of CO2 annually.
+            <h4 className="font-bold text-[#14312b] text-xs uppercase mb-1 tracking-wide">Next Up:</h4>
+            <p className="text-[#14312b] text-sm leading-snug font-medium">
+              {story.nextUp}
             </p>
           </div>
         </div>
 
         {/* --- PHOTO CHALLENGE --- */}
         <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-sm">
-          {/* UPDATED: Changed Title to include (Optional) */}
           <h3 className="font-display font-bold text-lg mb-2 flex items-center justify-center gap-2 text-[#14312b]">
             <span>📸</span> Capture a Memory (Optional)
           </h3>
-          
-          {/* UPDATED: New Instructions */}
           <p className="text-gray-500 text-sm mb-4">
             Standing at the checkpoint marker, face the Rain Vortex and snap a unique vantage photo to add to your photo gallery!
           </p>
@@ -157,7 +185,6 @@ export default function StoryPage() {
           onClick={handleContinue}
           className="w-full py-4 bg-[#14312b] hover:bg-[#0f2621] text-white rounded-xl font-bold text-lg shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
         >
-          {/* UPDATED: Changed 'Complete Quest' to 'Complete Trail' */}
           {currentId === 4 ? 'Complete Trail 🏆' : 'Next Challenge ➜'}
         </button>
       </div>

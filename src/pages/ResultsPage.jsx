@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Confetti from 'react-confetti';
+import { doc, addDoc, collection } from 'firebase/firestore'; 
+import { db } from '../firebase';
 
 export default function ResultsPage() {
   const navigate = useNavigate();
@@ -9,12 +11,18 @@ export default function ResultsPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
+  // Survey State
+  const [showSurvey, setShowSurvey] = useState(false);
+  const [surveyData, setSurveyData] = useState({ age: '', gender: '', feedback: '' });
+  const [surveySubmitted, setSurveySubmitted] = useState(false);
+
   useEffect(() => {
     let savedScore = parseInt(localStorage.getItem('userScore') || '0');
     const savedNation = localStorage.getItem('userNation') || 'TR';
     if (savedScore > 4) savedScore = 4;
     setScore(savedScore);
 
+    // Generate Ticket if Winner
     if (savedScore === 4) {
       const existingTicket = localStorage.getItem('dailyTicketID');
       const lastWinDate = localStorage.getItem('lastWinDate');
@@ -31,40 +39,68 @@ export default function ResultsPage() {
       }
     }
 
+    // Timer for Clock
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    
+    // Resize Handler for Confetti
     const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener('resize', handleResize);
-    return () => { window.removeEventListener('resize', handleResize); clearInterval(timer); };
+
+    // --- SURVEY TIMER (6 Seconds) ---
+    const surveyTimer = setTimeout(() => {
+      if (!localStorage.getItem('surveyDone')) {
+        setShowSurvey(true);
+      }
+    }, 6000); 
+
+    return () => { 
+      window.removeEventListener('resize', handleResize); 
+      clearInterval(timer); 
+      clearTimeout(surveyTimer);
+    };
   }, []);
+
+  const handleSurveySubmit = async (e) => {
+    e.preventDefault();
+    setSurveySubmitted(true);
+    localStorage.setItem('surveyDone', 'true');
+    
+    try {
+      await addDoc(collection(db, "surveys"), {
+        ...surveyData,
+        timestamp: new Date()
+      });
+    } catch (err) {
+      console.log("Survey saved locally only");
+    }
+
+    setTimeout(() => setShowSurvey(false), 2000);
+  };
 
   const isWinner = score === 4;
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
       
-      {isWinner && (
-        <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={400} gravity={0.15} />
-      )}
+      <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={400} gravity={0.15} />
 
       <div className="max-w-md w-full z-10 space-y-6">
         <div className="text-center">
           <h1 className="font-display text-3xl font-bold mb-2 text-[#14312b]">
-            {isWinner ? 'Quest Complete!' : 'Checkpoint Reached'}
+            Quest Complete!
           </h1>
-          {/* UPDATED: Subtitle with East Trail Prompt */}
+          {/* UPDATED TEXT */}
           <p className="text-gray-500 leading-relaxed px-4">
-            {isWinner 
-              ? 'You have conquered the Forest Valley. Why not challenge yourself with the Forest Valley Trail (East) next?' 
-              : 'Keep exploring to earn rewards.'}
+            You have conquered the Forest Valley. Why not challenge yourself with the Forest Valley Trail (East) next?
           </p>
         </div>
 
         {isWinner ? (
           /* --- GOLDEN TICKET --- */
           <div className="relative group perspective-1000 animate-[fadeIn_0.5s_ease-out]">
-            <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+            {/* REMOVED GLOW DIV TO REMOVE ORANGE SHADOW */}
             
-            <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
+            <div className="relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-lg">
               
               <div className="bg-[#14312b] text-amber-400 p-4 flex justify-between items-center">
                 <span className="font-bold tracking-widest text-xs uppercase flex items-center gap-2">
@@ -103,8 +139,7 @@ export default function ResultsPage() {
               </div>
             </div>
             
-            {/* NEW: Screenshot Prompt */}
-            <p className="text-center text-xs text-gray-400 mt-4 italic">
+            <p className="text-center text-sm text-gray-400 mt-6 italic relative z-10">
               📸 Tip: Take a screenshot to save this voucher!
             </p>
           </div>
@@ -125,7 +160,7 @@ export default function ResultsPage() {
           </div>
         )}
 
-        {/* --- NEW: EXPLORE LINKS --- */}
+        {/* --- EXPLORE LINKS --- */}
         <div className="flex flex-col gap-3 text-center pt-4 pb-2">
            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">More to Explore</p>
            
@@ -157,6 +192,101 @@ export default function ResultsPage() {
           </button>
         </div>
       </div>
+
+      {/* --- SURVEY OVERLAY --- */}
+      {showSurvey && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-[fadeIn_0.5s_ease-out]">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 relative animate-[slideUp_0.3s_ease-out]">
+            
+            <button 
+              onClick={() => setShowSurvey(false)}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 font-bold transition-colors"
+            >
+              ✕
+            </button>
+
+            {!surveySubmitted ? (
+              <form onSubmit={handleSurveySubmit}>
+                <div className="mb-6 text-center">
+                  <div className="text-2xl mb-2">📋</div>
+                  <h3 className="font-display font-bold text-xl text-[#14312b]">We Value Your Feedback</h3>
+                  <p className="text-gray-500 text-sm mt-2 leading-relaxed">
+                    Thank you for completing the trail. Please optionally fill out this survey to improve services at Changi Jewel Airport.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Age Dropdown */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Age Group</label>
+                    <select 
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#008272] text-sm"
+                      value={surveyData.age}
+                      onChange={(e) => setSurveyData({...surveyData, age: e.target.value})}
+                      required
+                    >
+                      <option value="" disabled>Select Age</option>
+                      <option value="Under 18">Under 18</option>
+                      <option value="18-24">18-24</option>
+                      <option value="25-34">25-34</option>
+                      <option value="35-44">35-44</option>
+                      <option value="45-54">45-54</option>
+                      <option value="55-64">55-64</option>
+                      <option value="65 and above">65 and above</option>
+                    </select>
+                  </div>
+
+                  {/* Gender Dropdown */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Gender</label>
+                    <select 
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#008272] text-sm"
+                      value={surveyData.gender}
+                      onChange={(e) => setSurveyData({...surveyData, gender: e.target.value})}
+                      required
+                    >
+                      <option value="" disabled>Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
+
+                  {/* Feedback Textarea */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Feedback & Recommendations</label>
+                    <textarea 
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#008272] text-sm h-24 resize-none"
+                      placeholder="Share your thoughts..."
+                      value={surveyData.feedback}
+                      onChange={(e) => setSurveyData({...surveyData, feedback: e.target.value})}
+                    ></textarea>
+                  </div>
+
+                  {/* ADDED DISCLAIMER */}
+                  <p className="text-[10px] text-gray-400 text-center leading-tight px-2">
+                    * All data is collected anonymously and in accordance with Singapore PDPA regulations.
+                  </p>
+
+                  <button 
+                    type="submit"
+                    className="w-full py-3 bg-[#14312b] hover:bg-[#0f2621] text-white font-bold rounded-xl shadow-lg transition-all active:scale-95"
+                  >
+                    Submit Survey
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4 animate-bounce">✅</div>
+                <h3 className="font-bold text-xl text-[#14312b]">Thank You!</h3>
+                <p className="text-gray-500 text-sm mt-2">Your feedback helps us create better experiences.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
