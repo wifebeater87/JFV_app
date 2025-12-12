@@ -48,6 +48,9 @@ export default function QuizPage() {
     setSelectedOptions(finalSelection);
     setIsSubmitted(true);
 
+    // STRICT SCORING LOGIC:
+    // User must select ONLY the correct answer. 
+    // If they select Correct + Wrong, this returns FALSE.
     let correct = false;
     if (isMultiSelect) {
       correct = finalSelection.length === 1 && finalSelection[0] === questionData.correctAnswer;
@@ -154,16 +157,22 @@ export default function QuizPage() {
              let buttonStyle = "bg-white border-gray-200 text-gray-700 hover:border-[#008272] shadow-sm";
              
              if (isSubmitted) {
+                // If the user selected this option...
                 if (isSelected) {
                    if (option === questionData.correctAnswer) {
+                     // They picked the RIGHT one (Green)
                      buttonStyle = "bg-emerald-100 border-emerald-500 text-emerald-900";
                    } else {
+                     // They picked a WRONG one (Red)
                      buttonStyle = "bg-red-100 border-red-500 text-red-900";
                    }
-                } else if (option === questionData.correctAnswer) {
+                } 
+                // If they didn't select it, but it WAS the right answer (Show ghost)
+                else if (option === questionData.correctAnswer) {
                    buttonStyle = "bg-emerald-50 border-emerald-200 text-emerald-700 opacity-60";
                 }
              } else {
+                // Active State
                 if (isSelected) {
                    buttonStyle = "bg-emerald-50 border-[#008272] text-[#008272] ring-1 ring-[#008272]";
                 }
@@ -183,22 +192,32 @@ export default function QuizPage() {
                 <div className="flex justify-between items-center">
                   <span className="leading-snug pr-4">{option}</span>
                   
-                  {/* --- UPDATED ICON LOGIC --- */}
+                  {/* --- ICON / POINTS LOGIC --- */}
                   {isSubmitted ? (
                     <>
+                      {/* Case 1: This is the CORRECT Answer */}
                       {option === questionData.correctAnswer ? (
                         isSelected ? (
-                          <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">
-                            +1 pt for {userNationName}
-                          </span>
+                          // If they Selected it AND got everything right (Strict Score) -> Show Points
+                          // If they Selected it BUT got other stuff wrong -> Show Checkmark only
+                          isCorrect ? (
+                            <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">
+                              +1 pt for {userNationName}
+                            </span>
+                          ) : (
+                            <span>✅</span> 
+                          )
                         ) : (
+                          // Missed the correct answer
                           <span>✅</span>
                         )
                       ) : (
+                        // Case 2: This is a WRONG Answer, and they selected it
                         isSelected && <span>❌</span>
                       )}
                     </>
                   ) : (
+                    // Default State: Show check circle for multi-select
                     !isSubmitted && isMultiSelect && (
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
                         ${isSelected ? 'border-[#008272] bg-[#008272]' : 'border-gray-300'}
