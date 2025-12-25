@@ -7,7 +7,8 @@
       "No"
     ],
     "correctAnswer": "Yes",
-    "explanation": "A height of 40m was specifically chosen for the Rain Vortex as it is the minimum height where water becomes “atomised”, freshening the air and cooling the Valley."
+    "explanation": "A height of 40m was specifically chosen for the Rain Vortex as it is the minimum height where water becomes “atomised”, freshening the air and cooling the Valley.",
+    "hint": "Look closely at the base of the waterfall on the lower levels."
   },
   {
     "id": 2,
@@ -24,14 +25,14 @@
   },
   {
     "id": 3,
-    "question": "Pay attention to the Skytrain when it intersects the Forest Valley. How many carriages does either train have?",
+    "question": "The Skytrain(s) will pass through the Forest Valley shortly (every 3min). How many carriages does either train have?",
     "options": [
       "1",
       "2",
       "3",
       "4"
     ],
-    "correctAnswer": "3",
+    "correctAnswer": ["2", "3"],
     "explanation": "Opened in 1990, the Skytrain was Southeast Asia’s first ever driverless people-mover, connecting Terminals 1, 2, and 3 seamlessly."
   },
   {
@@ -43,7 +44,7 @@
       "The Crystal Bridge is not supported by any overhead wire suspensions",
       "None of the above are true"
     ],
-    "correctAnswer": "The Crystal Bridge is not supported by any overhead wire suspensions",
+    "correctAnswer": "None of the above are true",
     "explanation": "The Crystal Bridge spans across the Forest Valley, offering visitors elevated views of the lush indoor garden and the Rain Vortex below, with its glass and steel design creates the feeling of walking on air."
   }
 ]

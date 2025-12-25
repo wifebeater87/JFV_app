@@ -15,6 +15,10 @@ export default function StoryPage() {
   // Fallback: Use the array from JSON, or an empty array if missing
   const carouselImages = story.images || [];
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   const handleContinue = () => {
     if (currentId < 4) {
       navigate(`/quiz/${currentId + 1}`);
@@ -63,6 +67,13 @@ export default function StoryPage() {
       {/* --- CAROUSEL HERO SECTION --- */}
       <div className="relative h-[45vh] w-full group bg-gray-200">
         
+        {/* Back Button */}
+        <button onClick={handleBack} className="absolute top-6 left-6 z-20 p-2 bg-white/20 backdrop-blur-md border border-white/30 rounded-full text-white hover:bg-white/40 transition-colors shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+        </button>
+
         {/* Scrollable Container with Padding for Scrollbar */}
         <div className="flex overflow-x-auto snap-x snap-mandatory w-full h-full scrollbar-minimal scroll-smooth pb-2">
           {carouselImages.map((imgUrl, index) => (

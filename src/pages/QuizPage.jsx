@@ -17,6 +17,7 @@ export default function QuizPage() {
   const [isCorrect, setIsCorrect] = useState(false); 
   const [userNation, setUserNation] = useState('');
   const [userNationName, setUserNationName] = useState('your nation');
+  const [showHint, setShowHint] = useState(false); // State for hint
 
   const isMultiSelect = currentId === 4; 
 
@@ -25,9 +26,22 @@ export default function QuizPage() {
     const storedNationName = localStorage.getItem('userNationName');
     if (storedNation) setUserNation(storedNation);
     if (storedNationName) setUserNationName(storedNationName);
-  }, []);
+
+    // Restore state if quiz was already taken
+    const savedState = localStorage.getItem(`quizState_${currentId}`);
+    if (savedState) {
+      const { selectedOptions: savedOptions, isCorrect: savedIsCorrect } = JSON.parse(savedState);
+      setSelectedOptions(savedOptions);
+      setIsCorrect(savedIsCorrect);
+      setIsSubmitted(true);
+    }
+  }, [currentId]);
 
   // --- HANDLERS ---
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   const handleOptionClick = (option) => {
     if (isSubmitted) return; 
 
@@ -48,17 +62,31 @@ export default function QuizPage() {
     setSelectedOptions(finalSelection);
     setIsSubmitted(true);
 
-    // STRICT SCORING LOGIC:
-    // User must select ONLY the correct answer. 
-    // If they select Correct + Wrong, this returns FALSE.
     let correct = false;
+    const correctAnswers = questionData.correctAnswer;
+
     if (isMultiSelect) {
-      correct = finalSelection.length === 1 && finalSelection[0] === questionData.correctAnswer;
+      // For multi-select Q4, user must select ONLY the correct answer(s).
+      // In this specific case for Q4, there's only one correct answer string.
+      correct = finalSelection.length === 1 && finalSelection[0] === correctAnswers;
     } else {
-      correct = finalSelection[0] === questionData.correctAnswer;
+      // For single-select
+      if (Array.isArray(correctAnswers)) {
+        // Q3: Either "2" or "3" is correct
+        correct = correctAnswers.includes(finalSelection[0]);
+      } else {
+        // Q1, Q2: Standard single correct answer
+        correct = finalSelection[0] === correctAnswers;
+      }
     }
 
     setIsCorrect(correct);
+
+    // Save state to localStorage
+    localStorage.setItem(`quizState_${currentId}`, JSON.stringify({
+      selectedOptions: finalSelection,
+      isCorrect: correct
+    }));
 
     if (correct) {
       if (userNation) {
@@ -72,8 +100,11 @@ export default function QuizPage() {
           }, { merge: true });
         } catch (error) { console.error("Firebase Error:", error); }
       }
-      const currentScore = parseInt(localStorage.getItem('userScore') || '0');
-      localStorage.setItem('userScore', currentScore + 1);
+      const currentScore = parseInt(sessionStorage.getItem('sessionScore') || '0');
+      sessionStorage.setItem('sessionScore', currentScore + 1);
+      
+      const totalScore = parseInt(localStorage.getItem('userScore') || '0');
+      localStorage.setItem('userScore', totalScore + 1);
     }
   };
 
@@ -99,6 +130,15 @@ export default function QuizPage() {
     </div>
   );
 
+  // Helper function to check if an option is correct
+  const isOptionCorrect = (option) => {
+    const correctAnswers = questionData.correctAnswer;
+    if (Array.isArray(correctAnswers)) {
+      return correctAnswers.includes(option);
+    }
+    return option === correctAnswers;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col p-6 relative font-sans overflow-x-hidden">
       
@@ -106,6 +146,13 @@ export default function QuizPage() {
 
       {/* --- HEADER --- */}
       <div className="mb-8 pt-4 relative z-10">
+        {/* Back Button */}
+        <button onClick={handleBack} className="absolute -top-2 left-0 p-2 text-gray-600 hover:text-[#008272] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+        </button>
+
         <div className="flex justify-between items-end mb-3">
           <div className="flex items-center gap-2">
             <span className="text-xl">🔭</span>
@@ -143,6 +190,23 @@ export default function QuizPage() {
             </div>
           )}
 
+          {/* Hint Dropdown for Quiz 1 */}
+          {currentId === 1 && questionData.hint && (
+            <div className="mt-4">
+              <button 
+                onClick={() => setShowHint(!showHint)}
+                className="flex items-center gap-2 text-[#008272] text-sm font-bold hover:underline focus:outline-none"
+              >
+                <span>💡</span> Need a hint?
+              </button>
+              {showHint && (
+                <div className="mt-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-gray-600 text-sm animate-[fadeIn_0.3s_ease-out]">
+                  {questionData.hint}
+                </div>
+              )}
+            </div>
+          )}
+
           {isMultiSelect && !isSubmitted && (
             <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-wide">
               Select all that apply
@@ -154,21 +218,22 @@ export default function QuizPage() {
         <div className="grid gap-3">
           {questionData.options.map((option, index) => {
              const isSelected = selectedOptions.includes(option);
+             const optionIsCorrect = isOptionCorrect(option);
              let buttonStyle = "bg-white border-gray-200 text-gray-700 hover:border-[#008272] shadow-sm";
              
              if (isSubmitted) {
                 // If the user selected this option...
                 if (isSelected) {
-                   if (option === questionData.correctAnswer) {
-                     // They picked the RIGHT one (Green)
+                   if (optionIsCorrect) {
+                     // They picked a RIGHT one (Green)
                      buttonStyle = "bg-emerald-100 border-emerald-500 text-emerald-900";
                    } else {
                      // They picked a WRONG one (Red)
                      buttonStyle = "bg-red-100 border-red-500 text-red-900";
                    }
                 } 
-                // If they didn't select it, but it WAS the right answer (Show ghost)
-                else if (option === questionData.correctAnswer) {
+                // If they didn't select it, but it WAS a right answer (Show ghost)
+                else if (optionIsCorrect) {
                    buttonStyle = "bg-emerald-50 border-emerald-200 text-emerald-700 opacity-60";
                 }
              } else {
@@ -195,11 +260,11 @@ export default function QuizPage() {
                   {/* --- ICON / POINTS LOGIC --- */}
                   {isSubmitted ? (
                     <>
-                      {/* Case 1: This is the CORRECT Answer */}
-                      {option === questionData.correctAnswer ? (
+                      {/* Case 1: This option is a CORRECT answer */}
+                      {optionIsCorrect ? (
                         isSelected ? (
-                          // If they Selected it AND got everything right (Strict Score) -> Show Points
-                          // If they Selected it BUT got other stuff wrong -> Show Checkmark only
+                          // If they Selected it AND got the *question* right -> Show Points
+                          // If they Selected it BUT got the *question* wrong (e.g. in multi-select) -> Show Checkmark only
                           isCorrect ? (
                             <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">
                               +1 pt for {userNationName}
@@ -208,7 +273,7 @@ export default function QuizPage() {
                             <span>✅</span> 
                           )
                         ) : (
-                          // Missed the correct answer
+                          // Missed a correct answer
                           <span>✅</span>
                         )
                       ) : (
@@ -259,7 +324,7 @@ export default function QuizPage() {
             <div className="text-sm text-gray-500 mb-6 leading-relaxed max-h-40 overflow-y-auto">
               {!isCorrect && (
                 <p className="mb-2 font-bold text-gray-700 bg-red-50 p-2 rounded-lg border border-red-100">
-                  Correct Answer: {questionData.correctAnswer}
+                  Correct Answer: {Array.isArray(questionData.correctAnswer) ? questionData.correctAnswer.join(" or ") : questionData.correctAnswer}
                 </p>
               )}
               {questionData.explanation}

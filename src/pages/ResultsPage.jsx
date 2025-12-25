@@ -10,6 +10,7 @@ export default function ResultsPage() {
   const [ticketID, setTicketID] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const [totalUserScore, setTotalUserScore] = useState(0);
 
   // Survey State
   const [showSurvey, setShowSurvey] = useState(false);
@@ -17,10 +18,16 @@ export default function ResultsPage() {
   const [surveySubmitted, setSurveySubmitted] = useState(false);
 
   useEffect(() => {
-    let savedScore = parseInt(localStorage.getItem('userScore') || '0');
-    const savedNation = localStorage.getItem('userNation') || 'TR';
+    // Get session score for the current quiz
+    let savedScore = parseInt(sessionStorage.getItem('sessionScore') || '0');
     if (savedScore > 4) savedScore = 4;
     setScore(savedScore);
+
+    // Get total user score from localStorage
+    const savedTotalScore = parseInt(localStorage.getItem('userScore') || '0');
+    setTotalUserScore(savedTotalScore);
+
+    const savedNation = localStorage.getItem('userNation') || 'TR';
 
     // Generate Ticket if Winner
     if (savedScore === 4) {
@@ -60,6 +67,10 @@ export default function ResultsPage() {
     };
   }, []);
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   const handleSurveySubmit = async (e) => {
     e.preventDefault();
     setSurveySubmitted(true);
@@ -82,23 +93,35 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
       
+      {/* Back Button */}
+      <button onClick={handleBack} className="absolute top-6 left-6 z-20 p-2 text-gray-600 hover:text-[#008272] transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+      </button>
+
       <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={400} gravity={0.15} />
 
-      <div className="max-w-md w-full z-10 space-y-6">
+      <div className="max-w-md w-full z-10 space-y-6 mt-12">
         <div className="text-center">
           <h1 className="font-display text-3xl font-bold mb-2 text-[#14312b]">
             Quest Complete!
           </h1>
-          {/* UPDATED TEXT */}
-          <p className="text-gray-500 leading-relaxed px-4">
-            You have conquered the Forest Valley. Why not challenge yourself with the Forest Valley Trail (East) next?
+          <p className="text-gray-500 leading-relaxed px-4 mb-4">
+            You have conquered the Forest Valley (West). Why not challenge yourself with the Forest Valley Trail (East) next?
           </p>
+
+          {/* ADDED TOTAL SCORE */}
+          <div className="inline-block bg-[#008272]/10 px-4 py-2 rounded-full">
+            <p className="text-[#008272] font-bold text-sm">
+              Total Contribution: {totalUserScore} points
+            </p>
+          </div>
         </div>
 
         {isWinner ? (
           /* --- GOLDEN TICKET --- */
           <div className="relative group perspective-1000 animate-[fadeIn_0.5s_ease-out]">
-            {/* REMOVED GLOW DIV TO REMOVE ORANGE SHADOW */}
             
             <div className="relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-lg">
               
@@ -152,7 +175,11 @@ export default function ResultsPage() {
               You need a perfect score to unlock the exclusive voucher.
             </p>
             <button 
-              onClick={() => { localStorage.setItem('userScore', '0'); navigate('/'); }}
+              onClick={() => { 
+                // Reset session score but keep user score
+                sessionStorage.setItem('sessionScore', '0');
+                navigate('/'); 
+              }}
               className="w-full py-3 bg-[#14312b] hover:bg-[#0f2621] text-white font-bold rounded-xl transition-all active:scale-95 shadow-lg"
             >
               Try Again ↻

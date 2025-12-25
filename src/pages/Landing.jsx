@@ -65,7 +65,12 @@ export default function Landing() {
     localStorage.setItem('userNation', nationality.code);
     localStorage.setItem('userNationName', nationality.name);
     localStorage.setItem('userNationFlag', nationality.flag);
-    localStorage.setItem('userScore', '0'); 
+    // Only reset session score, not the total user score
+    sessionStorage.setItem('sessionScore', '0');
+    if (!localStorage.getItem('userScore')) {
+        localStorage.setItem('userScore', '0');
+    }
+
     setActiveUsers(prev => prev + 1);
     navigate('/quiz/1');
   };
@@ -126,9 +131,9 @@ export default function Landing() {
               Instagram-worthy Pictures and Attractive Vouchers Await You!
             </h2>
             
-            {/* Intro Text */}
+            {/* Intro Text (Updated) */}
             <p className="text-gray-600 text-base leading-relaxed mb-6 max-w-md mx-auto">
-                Embark on a short, self-guided journey through Jewel Changi Airport’s Forest Valley Trail. Compete with other nations by answering quiz questions and stand a chance to win exciting vouchers!
+                Embark on a short, self-guided journey through Jewel Changi Airport’s Forest Valley Trail. Contend with other nations by answering quiz questions and stand a chance to win exciting vouchers!
             </p>
               
             {/* Disclaimer Box */}
@@ -142,22 +147,19 @@ export default function Landing() {
 
         <div className="space-y-4">
           
-          {/* --- ACTIVE USERS COUNTER (Lifted Text) --- */}
+          {/* --- ACTIVE USERS COUNTER --- */}
           {!hasWonToday && (
             <div className="flex items-center justify-center gap-3 mb-2 animate-[fadeIn_1s_ease-out]">
-              {/* Green Dot */}
               <div className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </div>
               
-              {/* Counter & Text Container */}
               <div className="text-gray-500 uppercase tracking-wide flex items-center gap-1.5">
                 <span className="font-bold text-emerald-600 text-xl leading-none">
                   <Odometer value={activeUsers} />
                 </span>
                 
-                {/* LIFTED TEXT: Added 'relative -top-[1px]' to nudge it up */}
                 <span className="text-sm font-bold relative -top-[2px]">
                   Explorers on the trail
                 </span>
@@ -165,7 +167,7 @@ export default function Landing() {
             </div>
           )}
 
-          {/* Nationality Picker */}
+          {/* Nationality Picker (Updated with Asterisk) */}
           {!hasWonToday && (
             <button 
               onClick={() => setIsModalOpen(true)}
@@ -177,7 +179,9 @@ export default function Landing() {
                   {nationality.name}
                 </span>
               ) : (
-                <span className="text-base font-medium text-gray-400">Tap to select nationality...</span>
+                <span className="text-base font-medium text-gray-400">
+                  Tap to select nationality <span className="text-red-500">*</span>
+                </span>
               )}
               <span className="text-gray-300 group-hover:text-[#008272]">▼</span>
             </button>
