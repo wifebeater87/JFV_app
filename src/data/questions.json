@@ -8,7 +8,7 @@
     ],
     "correctAnswer": "Yes",
     "explanation": "A height of 40m was specifically chosen for the Rain Vortex as it is the minimum height where water becomes “atomised”, freshening the air and cooling the Valley.",
-    "hint": "Look closely at the base of the waterfall on the lower levels."
+    "hint": "Can you see a fine white haze surrounding the water?"
   },
   {
     "id": 2,
@@ -37,14 +37,17 @@
   },
   {
     "id": 4,
-    "question": "Look up at the Crystal Bridge spanning across the top of the Forest Valley. Which of the following characteristics of the bridge are true? (Multi-select)",
+    "question": "Look up at the Canopy Bridge spanning across the top of the Forest Valley. Which of the following characteristics of the bridge are true? (Multi-select)",
     "options": [
-      "The Crystal Bridge is aligned with the centre of the airport",
-      "The Crystal Bridge is the tallest vantage point within the Forest Valley",
-      "The Crystal Bridge is not supported by any overhead wire suspensions",
+      "The Canopy Bridge connects the East and West sides of the Forest Valley",
+      "The Canopy bridge is supported by pillars from below",
+      "The Canopy Bridge is supported by overhead wire suspensions",
       "None of the above are true"
     ],
-    "correctAnswer": "None of the above are true",
-    "explanation": "The Crystal Bridge spans across the Forest Valley, offering visitors elevated views of the lush indoor garden and the Rain Vortex below, with its glass and steel design creates the feeling of walking on air."
+    "correctAnswer": [
+      "The Canopy Bridge connects the East and West sides of the Forest Valley",
+      "The Canopy Bridge is supported by overhead wire suspensions"
+    ],
+    "explanation": "The Canopy Bridge spans across the Forest Valley, offering visitors elevated views of the lush indoor garden and the Rain Vortex below, with its glass and steel design creating the feeling of walking on air."
   }
 ]

@@ -4,6 +4,7 @@ import { doc, increment, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import questionsData from '../data/questions.json';
 import Skeleton from '../components/Skeleton'; 
+import { PassportStamp, TrailMapTransition } from '../components/Transitions'; // Import Animations
 
 export default function QuizPage() {
   const { id } = useParams();
@@ -17,7 +18,11 @@ export default function QuizPage() {
   const [isCorrect, setIsCorrect] = useState(false); 
   const [userNation, setUserNation] = useState('');
   const [userNationName, setUserNationName] = useState('your nation');
-  const [showHint, setShowHint] = useState(false); // State for hint
+  const [showHint, setShowHint] = useState(false);
+  
+  // Transition States
+  const [showPassport, setShowPassport] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const isMultiSelect = currentId === 4; 
 
@@ -27,7 +32,7 @@ export default function QuizPage() {
     if (storedNation) setUserNation(storedNation);
     if (storedNationName) setUserNationName(storedNationName);
 
-    // Restore state if quiz was already taken
+    // Restore state
     const savedState = localStorage.getItem(`quizState_${currentId}`);
     if (savedState) {
       const { selectedOptions: savedOptions, isCorrect: savedIsCorrect } = JSON.parse(savedState);
@@ -37,21 +42,23 @@ export default function QuizPage() {
     }
   }, [currentId]);
 
-  // --- HANDLERS ---
-  const handleBack = () => {
-    navigate(-1);
+  // --- LOGIC ---
+  
+  // Helper to check arrays
+  const arraysEqual = (a, b) => {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    return sortedA.every((val, index) => val === sortedB[index]);
   };
 
   const handleOptionClick = (option) => {
     if (isSubmitted) return; 
-
     if (isMultiSelect) {
       if (selectedOptions.includes(option)) {
         setSelectedOptions(selectedOptions.filter(o => o !== option));
       } else {
-        if (selectedOptions.length < 4) { 
-          setSelectedOptions([...selectedOptions, option]);
-        }
+        if (selectedOptions.length < 4) setSelectedOptions([...selectedOptions, option]);
       }
     } else {
       submitAnswer([option]);
@@ -66,71 +73,79 @@ export default function QuizPage() {
     const correctAnswers = questionData.correctAnswer;
 
     if (isMultiSelect) {
-      // For multi-select Q4, user must select ONLY the correct answer(s).
-      // In this specific case for Q4, there's only one correct answer string.
-      correct = finalSelection.length === 1 && finalSelection[0] === correctAnswers;
+      // Q4: Must match the array exactly
+      correct = Array.isArray(correctAnswers) 
+        ? arraysEqual(finalSelection, correctAnswers)
+        : false;
     } else {
-      // For single-select
+      // Q1-3
       if (Array.isArray(correctAnswers)) {
-        // Q3: Either "2" or "3" is correct
         correct = correctAnswers.includes(finalSelection[0]);
       } else {
-        // Q1, Q2: Standard single correct answer
         correct = finalSelection[0] === correctAnswers;
       }
     }
 
     setIsCorrect(correct);
 
-    // Save state to localStorage
+    // Save State
     localStorage.setItem(`quizState_${currentId}`, JSON.stringify({
       selectedOptions: finalSelection,
       isCorrect: correct
     }));
 
-    if (correct) {
-      if (userNation) {
-        try {
-          const nationRef = doc(db, 'nations', userNation);
-          const nationFlag = localStorage.getItem('userNationFlag') || '🏳️';
-          await setDoc(nationRef, { 
-            score: increment(1),
-            name: userNationName,
-            flag: nationFlag
-          }, { merge: true });
-        } catch (error) { console.error("Firebase Error:", error); }
-      }
-      const currentScore = parseInt(sessionStorage.getItem('sessionScore') || '0');
-      sessionStorage.setItem('sessionScore', currentScore + 1);
-      
-      const totalScore = parseInt(localStorage.getItem('userScore') || '0');
-      localStorage.setItem('userScore', totalScore + 1);
+    // --- SCORING FIX ---
+    // Only increment score if this specific question hasn't been scored yet in this session
+    const hasScoredKey = `scored_q_${currentId}`;
+    if (correct && !sessionStorage.getItem(hasScoredKey)) {
+        
+        // 1. Mark as scored
+        sessionStorage.setItem(hasScoredKey, 'true');
+
+        // 2. Update Session Score (For "You Scored X/4")
+        const currentSessionScore = parseInt(sessionStorage.getItem('sessionScore') || '0');
+        sessionStorage.setItem('sessionScore', currentSessionScore + 1);
+
+        // 3. Update Total User Contribution (Lifetime)
+        const totalScore = parseInt(localStorage.getItem('userScore') || '0');
+        localStorage.setItem('userScore', totalScore + 1);
+
+        // 4. Update Firebase
+        if (userNation) {
+            try {
+                const nationRef = doc(db, 'nations', userNation);
+                const nationFlag = localStorage.getItem('userNationFlag') || '🏳️';
+                await setDoc(nationRef, { 
+                    score: increment(1),
+                    name: userNationName,
+                    flag: nationFlag
+                }, { merge: true });
+            } catch (error) { console.error("Firebase Error:", error); }
+        }
     }
   };
 
   const handleNext = () => {
+    if (isCorrect) {
+      // If correct, show Stamp first, then Map
+      setShowPassport(true);
+    } else {
+      // If wrong, go straight to Map
+      setShowMap(true);
+    }
+  };
+
+  const onPassportDone = () => {
+    setShowPassport(false);
+    setTimeout(() => setShowMap(true), 100);
+  };
+
+  const onMapDone = () => {
+    setShowMap(false);
     navigate(`/story/${currentId}`);
   };
 
-  // --- SKELETON LOADING ---
-  if (!questionData) return (
-    <div className="min-h-screen bg-gray-50 flex flex-col p-6 relative">
-      <div className="mb-6 pt-4">
-         <Skeleton className="w-32 h-6 bg-gray-200 mb-3" />
-         <Skeleton className="w-full h-2 rounded-full bg-gray-200" />
-      </div>
-      <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full pb-20">
-         <Skeleton className="w-24 h-6 mb-4 bg-gray-200" /> 
-         <Skeleton className="w-full h-10 mb-2 bg-gray-200" /> 
-         <Skeleton className="w-3/4 h-10 mb-8 bg-gray-200" /> 
-         <div className="grid gap-3">
-           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="w-full h-16 rounded-2xl bg-gray-200" />)}
-         </div>
-      </div>
-    </div>
-  );
-
-  // Helper function to check if an option is correct
+  // Helper for rendering checkmarks/X
   const isOptionCorrect = (option) => {
     const correctAnswers = questionData.correctAnswer;
     if (Array.isArray(correctAnswers)) {
@@ -139,20 +154,19 @@ export default function QuizPage() {
     return option === correctAnswers;
   };
 
+  if (!questionData) return <Skeleton className="w-full h-screen" />;
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col p-6 relative font-sans overflow-x-hidden">
       
+      {/* ANIMATION OVERLAYS */}
+      {showPassport && <PassportStamp onComplete={onPassportDone} />}
+      {showMap && <TrailMapTransition onComplete={onMapDone} currentStop={currentId} />}
+
       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
       {/* --- HEADER --- */}
       <div className="mb-8 pt-4 relative z-10">
-        {/* Back Button */}
-        <button onClick={handleBack} className="absolute -top-2 left-0 p-2 text-gray-600 hover:text-[#008272] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-          </svg>
-        </button>
-
         <div className="flex justify-between items-end mb-3">
           <div className="flex items-center gap-2">
             <span className="text-xl">🔭</span>
@@ -169,28 +183,19 @@ export default function QuizPage() {
       </div>
 
       {/* --- QUESTION AREA --- */}
-      <div className={`flex-1 flex flex-col justify-center max-w-lg mx-auto w-full relative z-10 transition-all duration-300 ${isSubmitted ? 'pb-96' : 'pb-24'}`}>
+      <div className={`flex-1 flex flex-col justify-center max-w-lg mx-auto w-full relative z-10 transition-all duration-300 ${isSubmitted ? 'pb-96' : 'pb-32'}`}>
         <div className="mb-6">
-          <div className="inline-block bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1 mb-4">
-            <p className="text-[#14312b] text-xs font-bold uppercase tracking-wide flex items-center gap-2">
-              <span>👁️</span> Observe your surroundings
-            </p>
-          </div>
           <h2 className="font-display text-2xl md:text-3xl font-bold leading-tight text-[#14312b]">
             {questionData.question}
           </h2>
           
           {questionData.image && (
             <div className="mt-4 mb-2">
-              <img 
-                src={questionData.image} 
-                alt="Question Reference" 
-                className="w-full rounded-2xl shadow-sm border border-emerald-100"
-              />
+              <img src={questionData.image} alt="Ref" className="w-full rounded-2xl shadow-sm border border-emerald-100"/>
             </div>
           )}
 
-          {/* Hint Dropdown for Quiz 1 */}
+          {/* Hint */}
           {currentId === 1 && questionData.hint && (
             <div className="mt-4">
               <button 
@@ -208,39 +213,28 @@ export default function QuizPage() {
           )}
 
           {isMultiSelect && !isSubmitted && (
-            <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-wide">
-              Select all that apply
-            </p>
+            <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-wide">Select all that apply</p>
           )}
         </div>
 
-        {/* Options Grid */}
+        {/* Options */}
         <div className="grid gap-3">
           {questionData.options.map((option, index) => {
              const isSelected = selectedOptions.includes(option);
              const optionIsCorrect = isOptionCorrect(option);
+             
              let buttonStyle = "bg-white border-gray-200 text-gray-700 hover:border-[#008272] shadow-sm";
              
              if (isSubmitted) {
-                // If the user selected this option...
                 if (isSelected) {
-                   if (optionIsCorrect) {
-                     // They picked a RIGHT one (Green)
-                     buttonStyle = "bg-emerald-100 border-emerald-500 text-emerald-900";
-                   } else {
-                     // They picked a WRONG one (Red)
-                     buttonStyle = "bg-red-100 border-red-500 text-red-900";
-                   }
-                } 
-                // If they didn't select it, but it WAS a right answer (Show ghost)
-                else if (optionIsCorrect) {
+                   buttonStyle = optionIsCorrect 
+                    ? "bg-emerald-100 border-emerald-500 text-emerald-900" 
+                    : "bg-red-100 border-red-500 text-red-900";
+                } else if (optionIsCorrect) {
                    buttonStyle = "bg-emerald-50 border-emerald-200 text-emerald-700 opacity-60";
                 }
-             } else {
-                // Active State
-                if (isSelected) {
-                   buttonStyle = "bg-emerald-50 border-[#008272] text-[#008272] ring-1 ring-[#008272]";
-                }
+             } else if (isSelected) {
+                buttonStyle = "bg-emerald-50 border-[#008272] text-[#008272] ring-1 ring-[#008272]";
              }
 
              return (
@@ -248,48 +242,25 @@ export default function QuizPage() {
                 key={index}
                 onClick={() => handleOptionClick(option)}
                 disabled={isSubmitted}
-                className={`
-                  relative w-full p-5 rounded-xl text-left font-bold text-lg border-2 transition-all duration-200 transform
-                  ${!isSubmitted ? 'active:scale-95' : ''}
-                  ${buttonStyle}
-                `}
+                className={`relative w-full p-5 rounded-xl text-left font-bold text-lg border-2 transition-all duration-200 transform ${!isSubmitted ? 'active:scale-95' : ''} ${buttonStyle}`}
               >
                 <div className="flex justify-between items-center">
                   <span className="leading-snug pr-4">{option}</span>
-                  
-                  {/* --- ICON / POINTS LOGIC --- */}
-                  {isSubmitted ? (
+                  {isSubmitted && (
                     <>
-                      {/* Case 1: This option is a CORRECT answer */}
                       {optionIsCorrect ? (
-                        isSelected ? (
-                          // If they Selected it AND got the *question* right -> Show Points
-                          // If they Selected it BUT got the *question* wrong (e.g. in multi-select) -> Show Checkmark only
-                          isCorrect ? (
-                            <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">
-                              +1 pt for {userNationName}
-                            </span>
-                          ) : (
-                            <span>✅</span> 
-                          )
-                        ) : (
-                          // Missed a correct answer
-                          <span>✅</span>
-                        )
+                         (isSelected && isCorrect) ? (
+                            <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">+1 pt for {userNationName}</span>
+                         ) : <span>✅</span>
                       ) : (
-                        // Case 2: This is a WRONG Answer, and they selected it
-                        isSelected && <span>❌</span>
+                         isSelected && <span>❌</span>
                       )}
                     </>
-                  ) : (
-                    // Default State: Show check circle for multi-select
-                    !isSubmitted && isMultiSelect && (
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
-                        ${isSelected ? 'border-[#008272] bg-[#008272]' : 'border-gray-300'}
-                      `}>
-                        {isSelected && <span className="text-white text-[10px]">✓</span>}
-                      </div>
-                    )
+                  )}
+                  {!isSubmitted && isMultiSelect && (
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-[#008272] bg-[#008272]' : 'border-gray-300'}`}>
+                       {isSelected && <span className="text-white text-[10px]">✓</span>}
+                    </div>
                   )}
                 </div>
               </button>
@@ -301,14 +272,21 @@ export default function QuizPage() {
           <button
             onClick={() => submitAnswer(selectedOptions)}
             disabled={selectedOptions.length === 0}
-            className={`mt-6 w-full py-4 rounded-xl font-bold text-lg transition-all
-              ${selectedOptions.length > 0 
-                ? 'bg-[#14312b] text-white shadow-lg hover:bg-[#0f2621]' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+            className={`mt-6 w-full py-4 rounded-xl font-bold text-lg transition-all ${selectedOptions.length > 0 ? 'bg-[#14312b] text-white shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
           >
             Confirm Answer
           </button>
         )}
+      </div>
+
+      {/* --- NEW BACK BUTTON (Bottom) --- */}
+      <div className="fixed bottom-0 left-0 w-full p-4 z-40 bg-gradient-to-t from-white via-white to-transparent pointer-events-none flex justify-center pb-8">
+        <button 
+          onClick={() => navigate(-1)}
+          className="pointer-events-auto bg-white border-2 border-[#008272] text-[#008272] px-8 py-3 rounded-xl font-bold shadow-sm transition-transform active:scale-95 hover:bg-emerald-50"
+        >
+          Go Back
+        </button>
       </div>
 
       {/* --- FEEDBACK POPUP --- */}
@@ -316,24 +294,20 @@ export default function QuizPage() {
         <div className={`fixed inset-x-0 bottom-0 p-6 rounded-t-3xl shadow-[0_-10px_60px_rgba(0,0,0,0.15)] animate-[slideUp_0.3s_ease-out] z-50 bg-white border-t border-gray-100`}>
           <div className="max-w-lg mx-auto">
             <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div> 
-            
             <h3 className={`font-display text-xl font-bold mb-1 ${isCorrect ? 'text-[#14312b]' : 'text-red-600'}`}>
               {isCorrect ? 'Excellent work! 🎯' : 'Not quite right...'}
             </h3>
-            
             <div className="text-sm text-gray-500 mb-6 leading-relaxed max-h-40 overflow-y-auto">
               {!isCorrect && (
                 <p className="mb-2 font-bold text-gray-700 bg-red-50 p-2 rounded-lg border border-red-100">
-                  Correct Answer: {Array.isArray(questionData.correctAnswer) ? questionData.correctAnswer.join(" or ") : questionData.correctAnswer}
+                  Correct Answer: {Array.isArray(questionData.correctAnswer) ? "Option 2 & 4" : questionData.correctAnswer}
                 </p>
               )}
               {questionData.explanation}
             </div>
-
             <button 
               onClick={handleNext}
-              className={`w-full py-4 rounded-xl font-bold shadow-lg transition-transform active:scale-95 flex justify-center items-center gap-2
-                ${isCorrect ? 'bg-[#14312b] text-white' : 'bg-gray-800 text-white'}`}
+              className={`w-full py-4 rounded-xl font-bold shadow-lg transition-transform active:scale-95 flex justify-center items-center gap-2 ${isCorrect ? 'bg-[#14312b] text-white' : 'bg-gray-800 text-white'}`}
             >
               Next ➜
             </button>
