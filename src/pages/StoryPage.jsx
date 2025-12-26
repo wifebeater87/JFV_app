@@ -10,22 +10,25 @@ export default function StoryPage() {
   const story = storylineData.find(s => s.id === currentId);
   const [userPhoto, setUserPhoto] = useState(null);
   const [isFactOpen, setIsFactOpen] = useState(false);
-  const [showMap, setShowMap] = useState(false); // Transition State
+  
+  // Transition State
+  const [showMap, setShowMap] = useState(false);
 
   const carouselImages = story.images || [];
 
   const handleContinue = () => {
-    // Show Map Transition before leaving
-    setShowMap(true);
+    // If we are at the last checkpoint (4), do NOT show map, go straight to results
+    if (currentId === 4) {
+      navigate('/results');
+    } else {
+      // Otherwise, show map transition first
+      setShowMap(true);
+    }
   };
 
   const onMapDone = () => {
     setShowMap(false);
-    if (currentId < 4) {
-      navigate(`/quiz/${currentId + 1}`);
-    } else {
-      navigate('/results');
-    }
+    navigate(`/quiz/${currentId + 1}`);
   };
 
   const handlePhotoCapture = (e) => {
@@ -36,19 +39,40 @@ export default function StoryPage() {
     }
   };
 
-  // ... (Keep handleSharePhoto same as before)
-  const handleSharePhoto = async () => { /* ... existing code ... */ };
+  const handleSharePhoto = async () => {
+    if (!userPhoto) return;
+    try {
+      const response = await fetch(userPhoto);
+      const blob = await response.blob();
+      const file = new File([blob], `jewel-memory-${currentId}.jpg`, { type: "image/jpeg" });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'My Jewel Memory',
+          text: `Captured at ${story.title} - Jewel Changi Airport`
+        });
+      } else {
+        const link = document.createElement('a');
+        link.href = userPhoto;
+        link.download = `jewel-memory-${currentId}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) { console.error("Error sharing:", error); }
+  };
 
   if (!story) return <div className="min-h-screen bg-white flex items-center justify-center text-gray-400">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-40 relative text-gray-800">
+    <div className="min-h-screen bg-gray-50 font-sans relative text-gray-800 flex flex-col">
       
       {/* TRANSITION */}
       {showMap && <TrailMapTransition onComplete={onMapDone} currentStop={currentId + 1} />}
 
       {/* CAROUSEL SECTION */}
-      <div className="relative h-[45vh] w-full group bg-gray-200">
+      <div className="relative h-[45vh] w-full group bg-gray-200 flex-shrink-0">
         <div className="flex overflow-x-auto snap-x snap-mandatory w-full h-full scrollbar-minimal scroll-smooth pb-2">
           {carouselImages.map((imgUrl, index) => (
             <img key={index} src={imgUrl} onError={(e) => {e.target.style.display='none'}} alt="" className="w-full h-full flex-shrink-0 object-cover snap-center"/>
@@ -64,8 +88,8 @@ export default function StoryPage() {
         </div>
       </div>
 
-      {/* CONTENT */}
-      <div className="px-6 mt-6 max-w-lg mx-auto space-y-6">
+      {/* CONTENT (Flex Grow to push buttons down) */}
+      <div className="px-6 mt-6 max-w-lg mx-auto space-y-6 flex-grow">
         <p className="text-gray-600 leading-relaxed text-lg font-light">{story.content}</p>
 
         {/* Fun Fact */}
@@ -101,8 +125,8 @@ export default function StoryPage() {
         </div>
       </div>
 
-      {/* BOTTOM NAV */}
-      <div className="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 z-20 flex flex-col gap-3">
+      {/* STATIC BUTTONS (No longer fixed) */}
+      <div className="mt-12 flex flex-col gap-3 px-6 pb-8 max-w-lg mx-auto w-full">
         <button 
           onClick={handleContinue}
           className="w-full py-4 bg-[#14312b] hover:bg-[#0f2621] text-white rounded-xl font-bold text-lg shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
@@ -110,7 +134,6 @@ export default function StoryPage() {
           {currentId === 4 ? 'Complete Trail 🏆' : 'Next Challenge ➜'}
         </button>
 
-        {/* NEW BACK BUTTON STYLE */}
         <button 
           onClick={() => navigate(-1)}
           className="w-full py-3 bg-white border-2 border-[#008272] text-[#008272] rounded-xl font-bold shadow-sm transition-transform active:scale-95 hover:bg-emerald-50"

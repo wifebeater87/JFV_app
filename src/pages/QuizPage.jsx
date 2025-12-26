@@ -4,7 +4,7 @@ import { doc, increment, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import questionsData from '../data/questions.json';
 import Skeleton from '../components/Skeleton'; 
-import { PassportStamp, TrailMapTransition } from '../components/Transitions'; // Import Animations
+import { PassportStamp } from '../components/Transitions'; // Only Passport here
 
 export default function QuizPage() {
   const { id } = useParams();
@@ -20,9 +20,8 @@ export default function QuizPage() {
   const [userNationName, setUserNationName] = useState('your nation');
   const [showHint, setShowHint] = useState(false);
   
-  // Transition States
+  // Transition State
   const [showPassport, setShowPassport] = useState(false);
-  const [showMap, setShowMap] = useState(false);
 
   const isMultiSelect = currentId === 4; 
 
@@ -43,8 +42,6 @@ export default function QuizPage() {
   }, [currentId]);
 
   // --- LOGIC ---
-  
-  // Helper to check arrays
   const arraysEqual = (a, b) => {
     if (a.length !== b.length) return false;
     const sortedA = [...a].sort();
@@ -73,12 +70,10 @@ export default function QuizPage() {
     const correctAnswers = questionData.correctAnswer;
 
     if (isMultiSelect) {
-      // Q4: Must match the array exactly
       correct = Array.isArray(correctAnswers) 
         ? arraysEqual(finalSelection, correctAnswers)
         : false;
     } else {
-      // Q1-3
       if (Array.isArray(correctAnswers)) {
         correct = correctAnswers.includes(finalSelection[0]);
       } else {
@@ -87,39 +82,21 @@ export default function QuizPage() {
     }
 
     setIsCorrect(correct);
+    localStorage.setItem(`quizState_${currentId}`, JSON.stringify({ selectedOptions: finalSelection, isCorrect: correct }));
 
-    // Save State
-    localStorage.setItem(`quizState_${currentId}`, JSON.stringify({
-      selectedOptions: finalSelection,
-      isCorrect: correct
-    }));
-
-    // --- SCORING FIX ---
-    // Only increment score if this specific question hasn't been scored yet in this session
     const hasScoredKey = `scored_q_${currentId}`;
     if (correct && !sessionStorage.getItem(hasScoredKey)) {
-        
-        // 1. Mark as scored
         sessionStorage.setItem(hasScoredKey, 'true');
-
-        // 2. Update Session Score (For "You Scored X/4")
         const currentSessionScore = parseInt(sessionStorage.getItem('sessionScore') || '0');
         sessionStorage.setItem('sessionScore', currentSessionScore + 1);
-
-        // 3. Update Total User Contribution (Lifetime)
         const totalScore = parseInt(localStorage.getItem('userScore') || '0');
         localStorage.setItem('userScore', totalScore + 1);
 
-        // 4. Update Firebase
         if (userNation) {
             try {
                 const nationRef = doc(db, 'nations', userNation);
                 const nationFlag = localStorage.getItem('userNationFlag') || '🏳️';
-                await setDoc(nationRef, { 
-                    score: increment(1),
-                    name: userNationName,
-                    flag: nationFlag
-                }, { merge: true });
+                await setDoc(nationRef, { score: increment(1), name: userNationName, flag: nationFlag }, { merge: true });
             } catch (error) { console.error("Firebase Error:", error); }
         }
     }
@@ -127,25 +104,17 @@ export default function QuizPage() {
 
   const handleNext = () => {
     if (isCorrect) {
-      // If correct, show Stamp first, then Map
-      setShowPassport(true);
+      setShowPassport(true); // Trigger animation
     } else {
-      // If wrong, go straight to Map
-      setShowMap(true);
+      navigate(`/story/${currentId}`); // Skip animation if wrong
     }
   };
 
   const onPassportDone = () => {
     setShowPassport(false);
-    setTimeout(() => setShowMap(true), 100);
-  };
-
-  const onMapDone = () => {
-    setShowMap(false);
     navigate(`/story/${currentId}`);
   };
 
-  // Helper for rendering checkmarks/X
   const isOptionCorrect = (option) => {
     const correctAnswers = questionData.correctAnswer;
     if (Array.isArray(correctAnswers)) {
@@ -157,11 +126,10 @@ export default function QuizPage() {
   if (!questionData) return <Skeleton className="w-full h-screen" />;
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col p-6 relative font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col p-6 relative font-sans">
       
-      {/* ANIMATION OVERLAYS */}
-      {showPassport && <PassportStamp onComplete={onPassportDone} />}
-      {showMap && <TrailMapTransition onComplete={onMapDone} currentStop={currentId} />}
+      {/* ANIMATION OVERLAY */}
+      {showPassport && <PassportStamp onComplete={onPassportDone} currentId={currentId} />}
 
       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
@@ -182,8 +150,8 @@ export default function QuizPage() {
         </div>
       </div>
 
-      {/* --- QUESTION AREA --- */}
-      <div className={`flex-1 flex flex-col justify-center max-w-lg mx-auto w-full relative z-10 transition-all duration-300 ${isSubmitted ? 'pb-96' : 'pb-32'}`}>
+      {/* --- MAIN CONTENT (Flex Grow) --- */}
+      <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full relative z-10">
         <div className="mb-6">
           <h2 className="font-display text-2xl md:text-3xl font-bold leading-tight text-[#14312b]">
             {questionData.question}
@@ -250,7 +218,12 @@ export default function QuizPage() {
                     <>
                       {optionIsCorrect ? (
                          (isSelected && isCorrect) ? (
-                            <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">+1 pt for {userNationName}</span>
+                            // Q4 VISUAL FIX: Show generic "Correct" or checkmark to avoid showing "+1" multiple times
+                             isMultiSelect ? (
+                                <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">Correct</span>
+                             ) : (
+                                <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">+1 pt for {userNationName}</span>
+                             )
                          ) : <span>✅</span>
                       ) : (
                          isSelected && <span>❌</span>
@@ -279,18 +252,19 @@ export default function QuizPage() {
         )}
       </div>
 
-      {/* --- NEW BACK BUTTON (Bottom) --- */}
-      <div className="fixed bottom-0 left-0 w-full p-4 z-40 bg-gradient-to-t from-white via-white to-transparent pointer-events-none flex justify-center pb-8">
-        <button 
-          onClick={() => navigate(-1)}
-          className="pointer-events-auto bg-white border-2 border-[#008272] text-[#008272] px-8 py-3 rounded-xl font-bold shadow-sm transition-transform active:scale-95 hover:bg-emerald-50"
-        >
-          Go Back
-        </button>
+      {/* --- STATIC BUTTONS (Bottom Flow) --- */}
+      <div className="mt-12 flex flex-col gap-3 w-full max-w-lg mx-auto pb-6">
+         <button 
+            onClick={() => navigate(-1)}
+            className="w-full py-3 bg-white border-2 border-[#008272] text-[#008272] rounded-xl font-bold shadow-sm transition-transform active:scale-95 hover:bg-emerald-50"
+         >
+            Go Back
+         </button>
       </div>
 
       {/* --- FEEDBACK POPUP --- */}
-      {isSubmitted && (
+      {/* Hide popup if transitioning */}
+      {isSubmitted && !showPassport && (
         <div className={`fixed inset-x-0 bottom-0 p-6 rounded-t-3xl shadow-[0_-10px_60px_rgba(0,0,0,0.15)] animate-[slideUp_0.3s_ease-out] z-50 bg-white border-t border-gray-100`}>
           <div className="max-w-lg mx-auto">
             <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4"></div> 
