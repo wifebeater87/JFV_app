@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore'; 
 import { db } from '../firebase';
 import countriesList from '../data/countries.json'; 
 import jewelLogo from '../assets/jewel-logo.png';
@@ -84,7 +84,7 @@ export default function Landing() {
         localStorage.setItem('userScore', '0');
     }
 
-    // 3. CLEAR PREVIOUS QUIZ ANSWERS (Fix for stuck answers)
+    // 3. CLEAR PREVIOUS QUIZ ANSWERS
     [1, 2, 3, 4].forEach(id => {
         localStorage.removeItem(`quizState_${id}`);
         sessionStorage.removeItem(`scored_q_${id}`);
@@ -99,7 +99,6 @@ export default function Landing() {
     c.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  // Ensure leaderboard is an array before using findIndex
   const safeLeaderboard = Array.isArray(leaderboard) ? leaderboard : [];
   const userRank = nationality ? safeLeaderboard.findIndex(n => n.id === nationality.code) : -1;
   const isInTop3 = userRank !== -1 && userRank < 3;
