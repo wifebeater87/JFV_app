@@ -34,14 +34,24 @@ export default function Landing() {
 
   // --- FETCH DATA ---
   useEffect(() => {
-    const nationsRef = collection(db, 'nations');
-    const q = query(nationsRef, orderBy('score', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const nationsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setLeaderboard(nationsData);
+    try {
+      const nationsRef = collection(db, 'nations');
+      const q = query(nationsRef, orderBy('score', 'desc'));
+      
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const nationsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setLeaderboard(nationsData);
+        setLoading(false);
+      }, (error) => {
+        console.error("Firebase Snapshot Error:", error);
+        setLoading(false); 
+      });
+      
+      return () => unsubscribe();
+    } catch (err) {
+      console.error("Firebase Init Error:", err);
       setLoading(false);
-    });
-    return () => unsubscribe();
+    }
   }, []);
 
   // --- CHECK DAILY WIN ---
@@ -62,15 +72,25 @@ export default function Landing() {
 
   const handleStart = () => {
     if (!nationality) return;
+
+    // 1. Save User Details
     localStorage.setItem('userNation', nationality.code);
     localStorage.setItem('userNationName', nationality.name);
     localStorage.setItem('userNationFlag', nationality.flag);
-    // Only reset session score, not the total user score
+    
+    // 2. Reset Session Score
     sessionStorage.setItem('sessionScore', '0');
     if (!localStorage.getItem('userScore')) {
         localStorage.setItem('userScore', '0');
     }
 
+    // 3. CLEAR PREVIOUS QUIZ ANSWERS (Fix for stuck answers)
+    [1, 2, 3, 4].forEach(id => {
+        localStorage.removeItem(`quizState_${id}`);
+        sessionStorage.removeItem(`scored_q_${id}`);
+    });
+
+    // 4. Navigate
     setActiveUsers(prev => prev + 1);
     navigate('/quiz/1');
   };
@@ -78,9 +98,12 @@ export default function Landing() {
   const filteredCountries = countriesList.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const userRank = nationality ? leaderboard.findIndex(n => n.id === nationality.code) : -1;
+  
+  // Ensure leaderboard is an array before using findIndex
+  const safeLeaderboard = Array.isArray(leaderboard) ? leaderboard : [];
+  const userRank = nationality ? safeLeaderboard.findIndex(n => n.id === nationality.code) : -1;
   const isInTop3 = userRank !== -1 && userRank < 3;
-  const userNationData = leaderboard[userRank];
+  const userNationData = safeLeaderboard[userRank];
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans overflow-x-hidden text-gray-800">
@@ -131,12 +154,10 @@ export default function Landing() {
               Instagram-worthy Pictures and Attractive Vouchers Await You!
             </h2>
             
-            {/* Intro Text (Updated) */}
             <p className="text-gray-600 text-base leading-relaxed mb-6 max-w-md mx-auto">
                 Embark on a short, self-guided journey through Jewel Changi Airport’s Forest Valley Trail. Contend with other nations by answering quiz questions and stand a chance to win exciting vouchers!
             </p>
               
-            {/* Disclaimer Box */}
             <div className="bg-orange-50/50 border border-orange-100 rounded-xl p-4 max-w-md mx-auto">
                 <p className="text-[13px] text-gray-500 leading-snug text-left">
                   <span className="text-red-500 font-bold mr-1">*</span>
@@ -147,7 +168,6 @@ export default function Landing() {
 
         <div className="space-y-4">
           
-          {/* --- ACTIVE USERS COUNTER --- */}
           {!hasWonToday && (
             <div className="flex items-center justify-center gap-3 mb-2 animate-[fadeIn_1s_ease-out]">
               <div className="relative flex h-3 w-3">
@@ -167,7 +187,6 @@ export default function Landing() {
             </div>
           )}
 
-          {/* Nationality Picker (Updated with Asterisk) */}
           {!hasWonToday && (
             <button 
               onClick={() => setIsModalOpen(true)}
@@ -196,15 +215,15 @@ export default function Landing() {
             
             <div className="p-4 space-y-3">
               {loading ? (
-                // SKELETONS
+                // Skeletons
                 [1, 2, 3].map(i => (
                   <div key={i} className="flex justify-between items-center">
                     <div className="flex items-center gap-3"><div className="w-6 h-6 bg-gray-100 rounded-full animate-pulse"></div><div className="w-20 h-4 bg-gray-100 rounded animate-pulse"></div></div>
                     <div className="w-8 h-4 bg-gray-100 rounded animate-pulse"></div>
                   </div>
                 ))
-              ) : (
-                leaderboard.slice(0, 3).map((nation, idx) => (
+              ) : safeLeaderboard.length > 0 ? (
+                safeLeaderboard.slice(0, 3).map((nation, idx) => (
                   <div key={nation.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border 
@@ -217,6 +236,13 @@ export default function Landing() {
                     <span className="font-mono font-bold text-sm text-gray-400">{nation.score}</span>
                   </div>
                 ))
+              ) : (
+                <div className="text-center py-6">
+                  <span className="text-3xl block mb-2">🌍</span>
+                  <p className="text-gray-400 text-sm italic font-medium">
+                    No active nations yet.<br/>Be the first to join the leaderboard!
+                  </p>
+                </div>
               )}
               
               {!loading && nationality && !isInTop3 && userNationData && (
@@ -233,7 +259,6 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Start / View Ticket Button */}
           {hasWonToday ? (
              <button 
                onClick={() => navigate('/results')}

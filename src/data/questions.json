@@ -1,18 +1,19 @@
 [
   {
     "id": 1,
-    "question": "Observe the Rain Vortex. Does misting form around the area where the vortex passes through the ground floor?",
+    "question": "Observe the bottom of the Rain Vortex. What is the shape of the opening in the floor through which it passes?",
     "options": [
-      "Yes",
-      "No"
+      "Circle",
+      "Oval",
+      "Rectangle",
+      "Square"
     ],
-    "correctAnswer": "Yes",
-    "explanation": "A height of 40m was specifically chosen for the Rain Vortex as it is the minimum height where water becomes “atomised”, freshening the air and cooling the Valley.",
-    "hint": "Can you see a fine white haze surrounding the water?"
+    "correctAnswer": "Circle",
+    "explanation": "A height of 40m was specifically chosen for the Rain Vortex as it is the minimum height where water becomes “atomised”, freshening the air and cooling the Valley."
   },
   {
     "id": 2,
-    "question": "Look carefully across you and spot the East Trail within the Forest Valley, adjacent to the waterfall. Refer to the image provided and pinpoint the location of the waterfall.",
+    "question": "Look carefully across you and spot the second, smaller waterfall within the Forest Valley – mark its location using the image below.",
     "image": "/images/map-q2.png",
     "options": [
       "A",
@@ -21,7 +22,7 @@
       "D"
     ],
     "correctAnswer": "B",
-    "explanation": "The architecture of Changi Jewel Airport was carefully interwoven with nature to immerse visitors in a calm, restorative atmosphere—helping them unwind instead of feeling the usual airport rush."
+    "explanation": "The architecture of Jewel Changi Airport was carefully interwoven with nature to immerse visitors in a calm, restorative atmosphere—helping them unwind instead of feeling the usual airport rush."
   },
   {
     "id": 3,

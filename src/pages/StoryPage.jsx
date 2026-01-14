@@ -90,7 +90,8 @@ export default function StoryPage() {
 
       {/* CONTENT (Flex Grow to push buttons down) */}
       <div className="px-6 mt-6 max-w-lg mx-auto space-y-6 flex-grow">
-        <p className="text-gray-600 leading-relaxed text-lg font-light">{story.content}</p>
+        {/* ADDED whitespace-pre-line to allow paragraphing */}
+        <p className="text-gray-600 leading-relaxed text-lg font-light whitespace-pre-line">{story.content}</p>
 
         {/* Fun Fact */}
         <button onClick={() => setIsFactOpen(!isFactOpen)} className="w-full text-left bg-white p-5 rounded-2xl border border-gray-200 shadow-sm transition-all active:scale-[0.98] hover:border-[#008272]/50 group">
@@ -103,11 +104,13 @@ export default function StoryPage() {
           </div>
         </button>
 
-        {/* Next Up */}
-        <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 flex gap-4 items-start">
-          <div className="text-2xl mt-1">🧭</div>
-          <div><h4 className="font-bold text-[#14312b] text-xs uppercase mb-1 tracking-wide">Next Up:</h4><p className="text-[#14312b] text-sm leading-snug font-medium">{story.nextUp}</p></div>
-        </div>
+        {/* Next Up - Hides if empty */}
+        {story.nextUp && (
+          <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 flex gap-4 items-start">
+            <div className="text-2xl mt-1">🧭</div>
+            <div><h4 className="font-bold text-[#14312b] text-xs uppercase mb-1 tracking-wide">Next Up:</h4><p className="text-[#14312b] text-sm leading-snug font-medium">{story.nextUp}</p></div>
+          </div>
+        )}
 
         {/* Photo */}
         <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-sm">
