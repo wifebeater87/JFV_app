@@ -32,20 +32,28 @@ export default function ResultsPage() {
 
     const savedNation = localStorage.getItem('userNation');
     const savedNationFlag = localStorage.getItem('userNationFlag');
+    const savedNationName = localStorage.getItem('userNationName');
 
     // 3. Fetch Real-time Nation Data
     if (savedNation) {
         const fetchNation = async () => {
-            const docRef = doc(db, "nations", savedNation);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                setNationData(docSnap.data());
-            } else {
-                // Fallback if fetch fails
-                setNationData({ name: localStorage.getItem('userNationName'), flag: savedNationFlag, score: '...' });
+            try {
+                const docRef = doc(db, "nations", savedNation);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setNationData(docSnap.data());
+                } else {
+                    // Fallback if fetch fails or doc doesn't exist yet
+                    setNationData({ name: savedNationName || 'Your Nation', flag: savedNationFlag || '🏳️', score: 0 });
+                }
+            } catch (err) {
+                console.error("Error fetching nation data:", err);
+                setNationData({ name: savedNationName || 'Your Nation', flag: savedNationFlag || '🏳️', score: '...' });
             }
         };
         fetchNation();
+    } else {
+        setNationData({ name: 'Your Nation', flag: '🏳️', score: 0 });
     }
 
     // 4. Ticket Generation
@@ -120,7 +128,8 @@ export default function ResultsPage() {
                 </div>
              </div>
              <div className="mt-2 text-center">
-                <span className="text-xs text-gray-500">You added <b className="text-[#008272]">{totalUserScore} pts</b> today!</span>
+                {/* Changed totalUserScore to score to show Session Points */}
+                <span className="text-xs text-gray-500">You added <b className="text-[#008272]">{score} pts</b> today!</span>
              </div>
           </div>
         </div>
@@ -164,7 +173,7 @@ export default function ResultsPage() {
         </div>
       </div>
       
-      {/* NEW BACK BUTTON STYLE */}
+      {/* STATIC BUTTON */}
       <div className="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 z-20 flex justify-center pb-8">
         <button 
           onClick={() => navigate('/')}

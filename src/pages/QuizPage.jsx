@@ -4,7 +4,7 @@ import { doc, increment, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import questionsData from '../data/questions.json';
 import Skeleton from '../components/Skeleton'; 
-import { PassportStamp } from '../components/Transitions'; // Only Passport here
+import { PassportStamp } from '../components/Transitions'; 
 
 export default function QuizPage() {
   const { id } = useParams();
@@ -123,6 +123,13 @@ export default function QuizPage() {
     return option === correctAnswers;
   };
 
+  // Helper to get display text for correct answer based on ID
+  const getCorrectAnswerDisplay = () => {
+    if (currentId === 3) return "2 and 3";
+    if (currentId === 4) return "Option 2 and 4"; // Hardcoded description for the long text options
+    return questionData.correctAnswer;
+  };
+
   if (!questionData) return <Skeleton className="w-full h-screen" />;
 
   return (
@@ -218,7 +225,6 @@ export default function QuizPage() {
                     <>
                       {optionIsCorrect ? (
                          (isSelected && isCorrect) ? (
-                            // Q4 VISUAL FIX: Show generic "Correct" or checkmark to avoid showing "+1" multiple times
                              isMultiSelect ? (
                                 <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2 py-1 rounded-full whitespace-nowrap">Correct</span>
                              ) : (
@@ -263,7 +269,6 @@ export default function QuizPage() {
       </div>
 
       {/* --- FEEDBACK POPUP --- */}
-      {/* Hide popup if transitioning */}
       {isSubmitted && !showPassport && (
         <div className={`fixed inset-x-0 bottom-0 p-6 rounded-t-3xl shadow-[0_-10px_60px_rgba(0,0,0,0.15)] animate-[slideUp_0.3s_ease-out] z-50 bg-white border-t border-gray-100`}>
           <div className="max-w-lg mx-auto">
@@ -274,7 +279,7 @@ export default function QuizPage() {
             <div className="text-sm text-gray-500 mb-6 leading-relaxed max-h-40 overflow-y-auto">
               {!isCorrect && (
                 <p className="mb-2 font-bold text-gray-700 bg-red-50 p-2 rounded-lg border border-red-100">
-                  Correct Answer: {Array.isArray(questionData.correctAnswer) ? "Option 2 & 4" : questionData.correctAnswer}
+                  Correct Answer: {getCorrectAnswerDisplay()}
                 </p>
               )}
               {questionData.explanation}
