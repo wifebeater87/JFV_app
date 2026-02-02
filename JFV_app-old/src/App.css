@@ -1,0 +1,21 @@
+import QuizPage from './pages/QuizPage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Landing from './pages/Landing';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Route for the Landing Page */}
+        <Route path="/" element={<Landing />} />
+        
+        {/* Placeholder Routes for later days */}
+        <Route path="/quiz/:id" element={<QuizPage />} />
+        <Route path="/story/:id" element={<div className="p-10">Storyline Page Coming Soon (Day 4)</div>} />
+        <Route path="/results" element={<div className="p-10">Results Page Coming Soon (Day 5)</div>} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;

@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "question": "Look closely at the plants around you. Is it true that the Forest Valley uses artificial foliage for the trail?",
+    "options": ["Yes", "No"],
+    "correctAnswer": "No",
+    "explanation": "Over 60,000 live, specially adapted plants are integrated throughout the valley."
+  },
+  {
+    "id": 2,
+    "question": "You are currently on the East Trail. Look up and observe the foliage atop. Do they obscure the upper levels of the trail?",
+    "options": ["Yes", "No"],
+    "correctAnswer": "Yes",
+    "explanation": "The dense foliage is designed to create an immersive rainforest feel, often obscuring the levels above."
+  },
+  {
+    "id": 3,
+    "question": "Observe the bottom of the Rain Vortex. What is the shape of the opening in the floor through which it passes?",
+    "options": ["Circle", "Oval", "Rectangle", "Square"],
+    "correctAnswer": "Circle",
+    "explanation": "The circular base connects to a rainwater harvesting system that purifies and recycles the water."
+  },
+  {
+    "id": 4,
+    "question": "Look up at the Canopy Bridge spanning across the top of the Forest Valley. Which of the following characteristics of the bridge are true? (Multi-select)",
+    "options": [
+      "The Canopy Bridge connects the East and West sides of the Forest Valley",
+      "The Canopy Bridge is supported by pillars from below",
+      "The Canopy Bridge is supported by overhead wire suspensions",
+      "None of the above are true"
+    ],
+    "correctAnswer": [
+      "The Canopy Bridge connects the East and West sides of the Forest Valley",
+      "The Canopy Bridge is supported by overhead wire suspensions"
+    ],
+    "explanation": "The Canopy Bridge is supported only by hanging wires to afford visitors unobstructed views."
+  },
+  {
+    "id": 5,
+    "question": "Look around the Forest Valley. How many floors does the greenery span?",
+    "options": ["6 Levels", "5 Levels", "4 Levels", "3 Levels"],
+    "correctAnswer": "5 Levels",
+    "explanation": "The Forest Valley is a massive 5-story indoor garden."
+  },
+  {
+    "id": 6,
+    "question": "Observe the surface you are standing on. Which material best describes the material of the ground?",
+    "options": ["Cobbled", "Dirt", "Wooden", "Marble"],
+    "correctAnswer": "Cobbled",
+    "explanation": "The trail uses cobbled pathways to enhance the natural, garden-like aesthetic."
+  },
+  {
+    "id": 7,
+    "question": "Pause and listen to the sounds around you. What sound is most noticeable?",
+    "options": ["Public announcements", "The rustling of leaves", "Water falling through the Rain Vortex", "Ambient music playing in the Forest Valley"],
+    "correctAnswer": "Water falling through the Rain Vortex",
+    "explanation": "The Rain Vortex soundscape is purposefully designed to mask the noise of airport operations."
+  },
+  {
+    "id": 8,
+    "question": "The Skytrain(s) will pass through the Forest Valley shortly ~ every 3min. How many carriages does either train have?",
+    "options": ["1", "2", "3", "4"],
+    "correctAnswer": ["2", "3"],
+    "explanation": "Either a 2-carriage or 3-carriage train may pass through at any time."
+  }
+]

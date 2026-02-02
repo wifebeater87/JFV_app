@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "An Indoor Rainforest",
+    "content": "Weaving together nature and architecture, Jewel Changi Airport’s Forest Valley is one of the world’s largest indoor gardens. Over 60,000 live, specially adapted plants are integrated throughout the valley, creating a seamless blend of greenery and man-made structure. The foliage not only helps regulate temperature and absorb carbon, but also softens the built environment, bringing a natural, calming atmosphere to the trail.\n\nWith rotating plant displays, the valley constantly evolves, orienting the passenger experience to be engaging, restorative and soothing, bringing in locals and tourists alike under a communal roof and dramatically echoing Singapore’s reputation as a ‘Garden City’, all while demonstrating how modern architecture can be harmonised with nature.",
+    "funFact": "Greenery covers an area of 21,000–22,000 m² across Jewel Changi Airport, amounting to ~16% of the terminal’s total area.",
+    "nextUp": "quiz/3",
+    "images": [
+      "/images/Story-1.jpg",
+      "/images/Story-2.jpg",
+      "/images/Story-3.jpg"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Singapore's Crown Jewel",
+    "content": "The Rain Vortex stands as the centrepiece of Jewel Changi Airport – over 9,000 unique glass panels create a free-form toroidal roof that channels rainwater into a 40 metre indoor waterfall; the circular base connects to a rainwater harvesting system that purifies and recycles this water to maintain the waterfall.\n\nThe roof, comprising 6000 tonnes of glass and steel, lacks conventional pillar supports, instead supported by its complex gridshell structure that spreads load horizontally to an external concrete ring. This load is then absorbed from the ring into the building’s foundations, creating an open, unconfined space within that affords a unique and relaxing airport experience.\n\nThe Canopy Bridge echoes this design philosophy, supported only by hanging wires that affords visitors unobstructed, panoramic views of the Forest Valley.",
+    "funFact": "The entire Forest Valley acts as a natural sound-softener; vegetation naturally absorbs and diffuses noise, reducing echo inside the immense glass dome.",
+    "nextUp": "quiz/5",
+    "images": [
+      "/images/Story-4.jpg",
+      "/images/Story-5.jpg",
+      "/images/Story-6.jpg"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Our Story",
+    "content": "From a small fishing village before 1819, Singapore has evolved to become an international trade and aviation hub.\n\nHowever, the road to success was neither paved nor smooth – pollution, racial riots, scarce natural resources and housing crises surged within a compact island, threatening the collapse of the nation.\n\nThrough prudent governance, economic strategy and the development of its people as its greatest resource, Singapore was not only able to recover but prosper into a thriving metropolis within just 7 decades.\n\nToday, Singapore is internationally recognised as one of the world’s top financial hubs, with annual trade flows exceeding $1 trillion. Over 90% of the island’s land is developed for public and economic use; foliage yet permeates throughout the nation’s cold efficiency, earning her reputation as a ‘Garden City’.",
+    "funFact": "Nearly 25% of Singapore’s current land area did not exist in 1960 and was created through land reclamation.",
+    "nextUp": "quiz/7",
+    "images": [
+      "/images/Story-7.jpg",
+      "/images/Story-8.jpg",
+      "/images/Story-9.jpg"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Journey Through the Skies",
+    "content": "As a global aviation hub, Singapore’s airports never truly rest. To this, the Forest Valley acts as a sanctuary, its soundscape purposefully masking the noise of the constant aircraft operations.\n\nSingapore’s aviation story began in 1937. Far from a global hub, only a modest airport stood at its centre to support regional operations. As air travel demand grew, the need for larger, modern facilities led to the opening of Changi Airport’s Terminal 1 in 1981, with continual expansion since.\n\nToday, Changi is consistently ranked the world’s best airport, handling over 1,000 daily aircraft movements – about 1 take-off or landing every minute. The airport’s terminal connector, dubbed the ‘Skytrain’, can not only be seen as a connector, but also a greater symbol towards Singapore’s connectivity to the world – connecting over 170 cities across 50 countries worldwide.",
+    "funFact": "Changi Airport was built on reclaimed land over former swamps and the Changi coastline.",
+    "nextUp": "results",
+    "images": [
+      "/images/Story-10.jpg",
+      "/images/Story-11.jpg",
+      "/images/Story-12.jpg"
+    ]
+  }
+]
