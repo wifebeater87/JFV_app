@@ -1,9 +1,9 @@
 [
   {
     "id": 1,
-    "question": "Look closely at the plants around you. Is it true that the Forest Valley uses artificial foliage for the trail?",
-    "options": ["Yes", "No"],
-    "correctAnswer": "No",
+    "question": "Look closely at the plants around you. Are they real or artificial?",
+    "options": ["Real", "Artificial"],
+    "correctAnswer": "Real",
     "explanation": "Over 60,000 live, specially adapted plants are integrated throughout the valley."
   },
   {
@@ -11,7 +11,7 @@
     "question": "You are currently on the East Trail. Look up and observe the foliage atop. Do they obscure the upper levels of the trail?",
     "options": ["Yes", "No"],
     "correctAnswer": "Yes",
-    "explanation": "The dense foliage is designed to create an immersive rainforest feel, often obscuring the levels above."
+    "explanation": "Dense foliage surrounds the Forest Valley, softening the built environment and harmonising man-made structures with nature."
   },
   {
     "id": 3,
@@ -33,34 +33,34 @@
       "The Canopy Bridge connects the East and West sides of the Forest Valley",
       "The Canopy Bridge is supported by overhead wire suspensions"
     ],
-    "explanation": "The Canopy Bridge is supported only by hanging wires to afford visitors unobstructed views."
+    "explanation": "The Canopy Bridge is supported only by wire suspensions to create unobstructed, panoramic views, connecting the East and West sides of the Forest Valley."
   },
   {
     "id": 5,
     "question": "Look around the Forest Valley. How many floors does the greenery span?",
     "options": ["6 Levels", "5 Levels", "4 Levels", "3 Levels"],
     "correctAnswer": "5 Levels",
-    "explanation": "The Forest Valley is a massive 5-story indoor garden."
+    "explanation": "The Forest Valley echoes Singapore’s reputation as a ‘Garden City’ layered with trees, palms, bushes and ferns across all of its 5 levels."
   },
   {
     "id": 6,
     "question": "Observe the surface you are standing on. Which material best describes the material of the ground?",
     "options": ["Cobbled", "Dirt", "Wooden", "Marble"],
     "correctAnswer": "Cobbled",
-    "explanation": "The trail uses cobbled pathways to enhance the natural, garden-like aesthetic."
+    "explanation": "The trail uses a cobbled surface that mimics a natural outdoor hiking trail."
   },
   {
     "id": 7,
     "question": "Pause and listen to the sounds around you. What sound is most noticeable?",
     "options": ["Public announcements", "The rustling of leaves", "Water falling through the Rain Vortex", "Ambient music playing in the Forest Valley"],
     "correctAnswer": "Water falling through the Rain Vortex",
-    "explanation": "The Rain Vortex soundscape is purposefully designed to mask the noise of airport operations."
+    "explanation": "The soundscape is dominated by the waterfall, purposefully designed to mask the sound of public announcements within the airport."
   },
   {
     "id": 8,
     "question": "The Skytrain(s) will pass through the Forest Valley shortly ~ every 3min. How many carriages does either train have?",
     "options": ["1", "2", "3", "4"],
     "correctAnswer": ["2", "3"],
-    "explanation": "Either a 2-carriage or 3-carriage train may pass through at any time."
+    "explanation": "The driverless Skytrains feature modular configurations and may have 2 to 3 carriages, depending on passenger traffic."
   }
 ]

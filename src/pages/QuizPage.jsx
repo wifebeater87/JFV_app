@@ -133,18 +133,18 @@ export default function QuizPage() {
     }
   };
 
-  // --- NAVIGATION LOGIC (RECTIFIED) ---
+  // --- NAVIGATION LOGIC ---
   const handleNext = () => {
-    // Correct Flow: Q1->Q2->S1->Q3->Q4->S2->Q5->Q6->S3->Q7->Q8->S4->Results
+    // Flow: Q1->Q2->S1->Q3->Q4->S2->Q5->Q6->S3->Q7->Q8->S4->Results
     const navigationMap = {
         1: '/quiz/2',
-        2: '/story/1',  // Corrected: Go to Story 1 after Q2
+        2: '/story/1',
         3: '/quiz/4',
-        4: '/story/2',  // Corrected: Go to Story 2 after Q4
+        4: '/story/2',
         5: '/quiz/6',
-        6: '/story/3',  // Corrected: Go to Story 3 after Q6
+        6: '/story/3',
         7: '/quiz/8',
-        8: '/story/4'   // Corrected: Go to Story 4 after Q8
+        8: '/story/4'
     };
 
     const nextPath = navigationMap[currentId];
@@ -166,14 +166,16 @@ export default function QuizPage() {
 
   const getCorrectAnswerDisplay = () => {
     if (currentId === 8) return "2 or 3"; 
-    if (currentId === 4) return "Connects East/West & Overhead wire suspensions"; 
+    // AMENDMENT: Updated text for Question 4
+    if (currentId === 4) return "The Canopy Bridge connects the East and West sides of the Forest Valley and is supported by overhead wire suspensions"; 
     return questionData.correctAnswer;
   };
 
   if (!questionData) return <Skeleton className="w-full h-screen" />;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col p-6 relative font-sans transition-colors duration-300">
+    // INCLUDED FIX: Added 'pb-48' to enable scrolling past the popup
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col p-6 pb-48 relative font-sans transition-colors duration-300">
       <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
       {/* HEADER */}
@@ -280,7 +282,6 @@ export default function QuizPage() {
          <button 
             onClick={() => {
                 if (readOnlyMode) {
-                     // Updated Review Map
                      const reviewMap = {
                         1: '/quiz/2', 2: '/story/1', 
                         3: '/quiz/4', 4: '/story/2',
