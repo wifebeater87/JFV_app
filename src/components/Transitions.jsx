@@ -119,7 +119,7 @@ export function TrailMapTransition({ onComplete, currentStop }) {
                 />
 
                 {/* LEGEND HIDER (White Patch) */}
-                <div className="absolute bottom-0 left-0 w-[50%] h-[23%] bg-white z-10"></div>
+                <div className="absolute bottom-0 left-0 w-[75%] h-[31%] bg-white z-10"></div>
 
                 {/* USER AVATAR (The Walker) */}
                 <div 

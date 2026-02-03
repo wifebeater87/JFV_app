@@ -28,10 +28,15 @@ export default function ResultsPage() {
       document.documentElement.classList.remove('dark');
     }
 
-    // 1. Get Session Score (capped at 4)
-    let savedSessionScore = parseInt(sessionStorage.getItem('sessionScore') || '0');
-    if (savedSessionScore > 4) savedSessionScore = 4;
-    setScore(savedSessionScore);
+    // 1. Calculate Score from Flags (Ensures accuracy for 8 questions)
+    // We check specifically for the 'scored_q_X' flags set in QuizPage
+    let calculatedScore = 0;
+    for (let i = 1; i <= 8; i++) {
+      if (sessionStorage.getItem(`scored_q_${i}`)) {
+        calculatedScore++;
+      }
+    }
+    setScore(calculatedScore);
 
     // 2. Lock Attempt (Backup check)
     // If user arrived here, ensure lock is set if not already
@@ -70,8 +75,8 @@ export default function ResultsPage() {
         setNationData({ name: 'Your Nation', flag: '🏳️', score: 0 });
     }
 
-    // 5. Ticket Generation
-    if (savedSessionScore === 4) {
+    // 5. Ticket Generation (Only if Score is 8)
+    if (calculatedScore === 8) {
       const existingTicket = localStorage.getItem('dailyTicketID');
       
       if (existingTicket) {
@@ -109,7 +114,8 @@ export default function ResultsPage() {
     setTimeout(() => setShowSurvey(false), 2000);
   };
 
-  const isWinner = score === 4;
+  // Winner logic: Must be 8
+  const isWinner = score === 8;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans pb-32 transition-colors">
@@ -174,7 +180,7 @@ export default function ResultsPage() {
           /* LOSE CARD */
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8 text-center shadow-lg">
             <div className="text-4xl mb-4">🌟</div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">You Scored {score}/4</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">You Scored {score}/8</h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed">You need a perfect score to unlock the exclusive voucher.</p>
             <button onClick={() => { sessionStorage.setItem('sessionScore', '0'); navigate('/'); }} className="w-full py-3 bg-[#14312b] hover:bg-[#0f2621] text-white font-bold rounded-xl transition-all active:scale-95 shadow-lg">Back to Home ➜</button>
           </div>

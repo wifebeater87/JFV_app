@@ -17,7 +17,15 @@ export default function StoryPage() {
   // Review Mode State
   const [isReviewMode, setIsReviewMode] = useState(false);
 
-  const carouselImages = story.images || [];
+  // Explicit Headers Mapping
+  const headers = {
+    1: "An Indoor Rainforest",
+    2: "Singapore’s Crown Jewel",
+    3: "Our Little Red Dot",
+    4: "Growing Wings"
+  };
+
+  const carouselImages = story ? (story.images || []) : [];
 
   // --- 1. DARK MODE & REVIEW CHECK ---
   useEffect(() => {
@@ -39,16 +47,15 @@ export default function StoryPage() {
   }, []);
 
   const handleContinue = () => {
-    // If last story (Story 4), go to results
+    // If last story, go to results
     if (currentId === 4) {
       navigate('/results');
       return;
     }
 
-    // Calculate next quiz ID: (StoryID * 2) + 1
+    // Calculate correct next quiz: (Story ID * 2) + 1
     // Story 1 -> Quiz 3
     // Story 2 -> Quiz 5
-    // Story 3 -> Quiz 7
     const nextQuizId = (currentId * 2) + 1;
 
     // If Review Mode, SKIP ANIMATION
@@ -62,7 +69,7 @@ export default function StoryPage() {
 
   const onMapDone = () => {
     setShowMap(false);
-    // Navigate to next Quiz (S1 -> Q3, S2 -> Q5...)
+    // FIX: Ensure animation also jumps to the correct quiz (e.g. Quiz 3), not Quiz 2
     navigate(`/quiz/${(currentId * 2) + 1}`);
   };
 
@@ -94,7 +101,10 @@ export default function StoryPage() {
           <div className="inline-block bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full mb-3 shadow-sm">
             <span className="text-emerald-300 font-bold uppercase tracking-widest text-xs">Checkpoint {currentId}</span>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-white leading-tight">{story.title}</h1>
+          {/* UPDATED HEADER LOGIC */}
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-white leading-tight">
+            {headers[currentId]}
+          </h1>
           <p className="text-white/70 text-xs mt-2 italic flex items-center gap-1">Swipe for more views <span>👉</span></p>
         </div>
       </div>
@@ -128,7 +138,10 @@ export default function StoryPage() {
             <div className="text-2xl mt-1">🧭</div>
             <div>
                 <h4 className="font-bold text-[#14312b] dark:text-emerald-300 text-xs uppercase mb-1 tracking-wide">Next Up:</h4>
-                <p className="text-[#14312b] dark:text-emerald-100 text-sm leading-snug font-medium">{story.nextUp}</p>
+                {/* Clean display for "quiz/X" text */}
+                <p className="text-[#14312b] dark:text-emerald-100 text-sm leading-snug font-medium">
+                    {story.nextUp.replace('quiz/', 'Quiz ')}
+                </p>
             </div>
           </div>
         )}

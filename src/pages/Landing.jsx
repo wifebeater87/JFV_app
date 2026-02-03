@@ -248,7 +248,7 @@ export default function Landing() {
             <div className="bg-orange-50/50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 rounded-xl p-4 max-w-md mx-auto">
                 <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-snug text-left">
                   <span className="text-red-500 font-bold mr-1">*</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">Please note:</span> Each person is limited to one quiz attempt and one voucher redemption per day.
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">Please note:</span> Each person is limited to 1 quiz attempt and 1 voucher redemption per day. Voucher redemption is only available after answering all quiz questions correctly.
                 </p>
             </div>
         </div>
